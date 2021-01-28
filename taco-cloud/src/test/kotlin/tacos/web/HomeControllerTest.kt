@@ -1,4 +1,4 @@
-package tacos
+package tacos.web
 
 import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.Test
