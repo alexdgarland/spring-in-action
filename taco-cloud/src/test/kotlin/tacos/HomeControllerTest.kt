@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
 @WebMvcTest
-class HomeControllerTest()  {
+class HomeControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc

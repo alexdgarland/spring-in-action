@@ -17,6 +17,8 @@
 	<properties>
 		<java.version>11</java.version>
 		<kotlin.version>1.4.21</kotlin.version>
+		<detekt-plugin.version>1.15.0</detekt-plugin.version>
+		<detekt.config>build/detekt.yml</detekt.config>
 	</properties>
 
 	<dependencies>
@@ -80,6 +82,24 @@
 						<version>${kotlin.version}</version>
 					</dependency>
 				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>com.github.ozsie</groupId>
+				<artifactId>detekt-maven-plugin</artifactId>
+				<version>${detekt-plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<report>
+								<report>html:${project.basedir}/target/detekt/detekt.html</report>
+							</report>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

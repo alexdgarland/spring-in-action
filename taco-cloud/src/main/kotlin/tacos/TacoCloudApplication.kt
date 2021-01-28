@@ -7,5 +7,8 @@ import org.springframework.boot.runApplication
 class TacoCloudApplication
 
 fun main(args: Array<String>) {
+
+	@Suppress("SpreadOperator")
 	runApplication<TacoCloudApplication>(*args)
+
 }
