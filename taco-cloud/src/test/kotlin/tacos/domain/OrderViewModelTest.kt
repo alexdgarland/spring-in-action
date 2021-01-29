@@ -22,7 +22,7 @@ const val CC_CVV = "123"
 class OrderViewModelTest {
 
     @Test
-    fun conversionToDomainObjectSucceedsWhenAllFieldsNonNull() {
+    fun `Conversion to domain object succeeds when all fields are non-null`() {
         val viewModel = OrderViewModel(NAME_FOR_ORDER, STREET, CITY, STATE, ZIP, CC_NUMBER, CC_EXPIRATION_STRING, CC_CVV)
         val domainObject = viewModel.toOrder()
         assertEquals(NAME_FOR_ORDER, domainObject.name)
@@ -50,20 +50,18 @@ class OrderViewModelTest {
 
     @ParameterizedTest
     @MethodSource("incompleteViewModels")
-    fun conversionToDomainObjectThrowsViewModelValidationExceptionWhenAnyFieldsIsNull(viewModel: OrderViewModel) {
-        assertThrows<ViewModelValidationException> {
-            viewModel.toOrder()
-        }
+    fun `Conversion to domain object throws ViewModelValidationException when any field is null`(
+        viewModel: OrderViewModel
+    ) {
+        assertThrows<ViewModelValidationException> { viewModel.toOrder() }
     }
 
     @Test
-    fun conversionToDomainObjectThrowsViewModelValidationExceptionWhenExpirationDateIsInInvalidFormat() {
-        val viewModelWithInvalidDate = OrderViewModel(
+    fun `Conversion to domain object throws ViewModelValidationException when expiration date is in invalid format`() {
+        val viewModel = OrderViewModel(
             NAME_FOR_ORDER, STREET, CITY, STATE, ZIP, CC_NUMBER, "07-12-2024", CC_CVV
         )
-        assertThrows<ViewModelValidationException> {
-            viewModelWithInvalidDate.toOrder()
-        }
+        assertThrows<ViewModelValidationException> { viewModel.toOrder() }
     }
 
 }

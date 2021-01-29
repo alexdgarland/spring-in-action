@@ -12,16 +12,30 @@ data class TacoDesignViewModel(
     var ingredients: List<String>? = null
 ) {
 
+    private fun convertIngredientsFromStrings(ingredients: List<String>): List<Ingredient> {
+        if (ingredients.isEmpty()) {
+            throw ViewModelValidationException("No ingredients were selected")
+        }
+        return ingredients.map { orderedIngredient ->
+            try {
+                availableIngredients.filter { it.id == orderedIngredient }.first()
+            }
+            catch (nsee: NoSuchElementException) {
+                throw ViewModelValidationException("Ingredient \"$orderedIngredient\" is not available", nsee)
+            }
+        }
+        //  The following  would also work (and mightly be marginally more efficient):
+        //
+        //      availableIngredients.filter { ingredients.contains(it.id) }
+        //
+        //  ...but does not preserve ordering and would require a different approach to throw an exception
+        //  where ingredients are not available
+    }
+
     fun toTacoDesign(): TacoDesign {
         return TacoDesign(
-            name!!,
-            ingredients!!.map { orderedIngredient ->
-                availableIngredients.filter {
-                    it.id == orderedIngredient
-                }.first()
-            }
-            //  This would also succeed (and mightly be marginally more efficient) but does not preserve ordering:
-            //      availableIngredients.filter { ingredients!!.contains(it.id) }
+            validateNonNull(name, "name"),
+            convertIngredientsFromStrings(validateNonNull(ingredients, "ingredients"))
         )
     }
 
