@@ -1,3 +1,20 @@
 body {
-  background-color: lightblue;
+  background-color: #1fad6b;
+}
+
+.grid-design-ingredients {
+  display: grid;
+  grid-template-columns: 300px 300px 300px;
+  padding: 10px;
+}
+
+.grid-delivery-info {
+  display: grid;
+  grid-template-columns: 200px 500px;
+  padding: 10px;
+}
+
+.button {
+  background-color: #2edb5c;
+  font-size: 14px;
 }

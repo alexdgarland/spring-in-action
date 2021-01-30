@@ -31,6 +31,7 @@ class DesignTacoController {
 
     @GetMapping
     fun showDesignForm(model: Model): String {
+        logger.info("Loading taco design page")
 
         IngredientType.values().forEach { type ->
             model.addAttribute(type.toString().toLowerCase(), availableIngredients.filter { it.type == type })
@@ -41,8 +42,8 @@ class DesignTacoController {
     }
 
     @PostMapping
-    fun processDesign(design: TacoDesignViewModel): String {
-        logger.info("Processing design: $design")
+    fun processDesign(designViewModel: TacoDesignViewModel): String {
+        logger.info("Processing design: ${designViewModel.toTacoDesign()}")
         return "redirect:/orders/current"
     }
 

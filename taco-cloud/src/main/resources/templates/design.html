@@ -5,12 +5,12 @@
       xmlns:th="http://www.thymeleaf.org">
 
     <head>
-        <title>Taco Cloud</title>
+        <title>Taco Cloud - Taco Design</title>
         <link rel="stylesheet" th:href="@{/css/stylesheet.css}" />
     </head>
 
     <body>
-    <h1>Design your taco!</h1>
+    <h1><i>Design your taco!</i></h1>
     <img th:src="@{/images/TacoCloud.png}" width="400"/>
 
     <!-- tag::formTag[] -->
@@ -22,7 +22,7 @@
               th:errors="*{ingredients}">Ingredient Error</span>
 
         <!-- tag::all[] -->
-        <div class="grid">
+        <div class="grid-design-ingredients">
             <!-- end::formTag[] -->
             <!-- end::head[] -->
             <div class="ingredient-group" id="wraps">
@@ -70,7 +70,6 @@
 
         <div>
 
-
             <h3>Name your taco creation:</h3>
             <input type="text" th:field="*{name}"/>
             <!-- end::all[] -->
@@ -81,7 +80,8 @@
             <!-- tag::all[] -->
             <br/>
 
-            <button>Submit your taco</button>
+            <p><button class="button" type="submit">Submit your taco</button></p>
+
         </div>
         <!-- tag::closeFormTag[] -->
     </form>

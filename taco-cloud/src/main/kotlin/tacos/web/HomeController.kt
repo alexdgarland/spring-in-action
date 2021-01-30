@@ -1,5 +1,6 @@
 package tacos.web
 
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 
@@ -7,7 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping
 @Suppress("FunctionOnlyReturningConstant")
 class HomeController {
 
+    private val logger = LoggerFactory.getLogger(javaClass)
+
     @GetMapping
-    fun home() = "home"
+    fun home(): String {
+        logger.info("Loading home page")
+        return "home"
+    }
 
 }
