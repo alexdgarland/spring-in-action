@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
+import javax.validation.Validation
 
 const val DESIGN_NAME = "Mi taco"
 val ingredientList = listOf("COTO", "GRBF", "JACK", "TMTO", "LETC", "SLSA")
@@ -15,8 +16,27 @@ val ingredientList = listOf("COTO", "GRBF", "JACK", "TMTO", "LETC", "SLSA")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TacoDesignViewModelTest {
 
+    private val validator = run { Validation.buildDefaultValidatorFactory().validator }
+
+    fun incompleteViewModels(): Stream<Arguments> {
+        return Stream.of(
+            Arguments.of(TacoDesignViewModel(ingredients = ingredientList), "Name must be at least 5 characters long"),
+            Arguments.of(TacoDesignViewModel(name = DESIGN_NAME), "You must choose at least one ingredient"),
+        )
+    }
+
+    @ParameterizedTest
+    @MethodSource("incompleteViewModels")
+    fun `Validation enforces that all fields are set`(
+        viewModel: TacoDesignViewModel,
+        expectedErrorMessage: String
+    ) {
+        val violations = validator.validate(viewModel)
+        assertEquals(expectedErrorMessage, violations.single().message)
+    }
+
     @Test
-    fun `Conversion to domain object succeeds when all fields are non-null`() {
+    fun `Conversion to domain object succeeds when all fields are valid`() {
         val viewModel = TacoDesignViewModel(DESIGN_NAME, ingredientList)
 
         val domainObject = viewModel.toTacoDesign()
@@ -33,34 +53,14 @@ class TacoDesignViewModelTest {
         assertEquals(expectedIngredients, domainObject.ingredients)
     }
 
-    fun incompleteViewModels(): Stream<Arguments> {
-        return Stream.of(
-            TacoDesignViewModel(null, ingredientList),
-            TacoDesignViewModel(DESIGN_NAME, null)
-        ).map { Arguments.of(it) }
-    }
-
-    @ParameterizedTest
-    @MethodSource("incompleteViewModels")
-    fun `Conversion to domain object throws ViewModelValidationException when any field is null`(
-        viewModel: TacoDesignViewModel
-    ) {
-        assertThrows<ViewModelValidationException> { viewModel.toTacoDesign() }
-    }
-
     @Test
-    fun `Conversion to domain object throws ViewModelValidationException when any ingredient not available`() {
+    fun `Conversion to domain object throws ViewModelConversionException when any ingredient not available`() {
         val viewModel = TacoDesignViewModel(
             DESIGN_NAME,
             listOf("Oh no, an ingredient that doesn't exist due to a race condition...")
         )
-        assertThrows<ViewModelValidationException> { viewModel.toTacoDesign() }
+        assertThrows<ViewModelConversionException> { viewModel.toTacoDesign() }
     }
 
-    @Test
-    fun `Conversion to domain object throws ViewModelValidationException when ingredient list is empty`() {
-        val viewModel = TacoDesignViewModel(DESIGN_NAME, emptyList())
-        assertThrows<ViewModelValidationException> { viewModel.toTacoDesign() }
-    }
 
 }
