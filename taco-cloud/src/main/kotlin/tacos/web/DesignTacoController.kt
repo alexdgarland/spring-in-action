@@ -29,7 +29,7 @@ val availableIngredients = listOf(
 
 // Build lists of ingredients, including preserving of state of checkboxes when validation errors are thrown.
 // Not sure if under any circumstances this would be better done in JavaScript?
-fun getCheckBoxes(
+fun getIngredientUiMap(
     availableIngredients: List<Ingredient>,
     designViewModel: TacoDesignViewModel
 ): Map<String, List<IngredientCheckBoxViewModel>> {
@@ -53,7 +53,9 @@ class DesignTacoController {
 
     fun setUpDesignPage(uiModel: Model, designViewModel: TacoDesignViewModel): String {
         logger.info("Loading taco design page")
-        getCheckBoxes(availableIngredients, designViewModel).forEach { uiModel.addAttribute(it.key, it.value) }
+        val ingredientUiMap = getIngredientUiMap(availableIngredients, designViewModel)
+        uiModel.addAttribute("ingredientMap", ingredientUiMap)
+        ingredientUiMap.forEach { uiModel.addAttribute(it.key, it.value) }
         uiModel.addAttribute("design", designViewModel)
         return "design"
     }

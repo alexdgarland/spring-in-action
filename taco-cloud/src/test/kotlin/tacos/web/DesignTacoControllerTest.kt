@@ -3,14 +3,13 @@ package tacos.web
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import tacos.domain.IngredientCheckBoxViewModel
-import tacos.domain.IngredientType
 import tacos.domain.TacoDesignViewModel
 
 
 class DesignTacoControllerTest {
 
     @Test
-    fun `getCheckBoxes function should return expected map (all unchecked) for empty design model`() {
+    fun `getIngredientUiMap function should return expected map (all unchecked) for empty design model`() {
         val expectedMap = mapOf(
             "wrap" to listOf(
                 IngredientCheckBoxViewModel("FLTO", "Flour Tortilla", false),
@@ -34,13 +33,13 @@ class DesignTacoControllerTest {
             )
         )
 
-        val actualMap = getCheckBoxes(availableIngredients, TacoDesignViewModel())
+        val actualMap = getIngredientUiMap(availableIngredients, TacoDesignViewModel())
 
         assertEquals(expectedMap, actualMap)
     }
 
     @Test
-    fun `getCheckBoxes function should return expected map (some checked) for populated design model`() {
+    fun `getIngredientUiMap function should return expected map (some checked) for populated design model`() {
         val designViewModel = TacoDesignViewModel("My taco design", listOf("COTO", "GRBF", "TMTO", "JACK", "SLSA"))
         val expectedMap = mapOf(
             "wrap" to listOf(
@@ -65,7 +64,7 @@ class DesignTacoControllerTest {
             )
         )
 
-        val actualMap = getCheckBoxes(availableIngredients, designViewModel)
+        val actualMap = getIngredientUiMap(availableIngredients, designViewModel)
 
         assertEquals(expectedMap, actualMap)
     }
