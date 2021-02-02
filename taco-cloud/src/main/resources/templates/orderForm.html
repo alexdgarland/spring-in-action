@@ -24,28 +24,35 @@
 
             <label for="name">Name: </label>
             <input type="text" th:field="*{name}"/>
+            <div><span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="validationError"></span></div>
 
-            <label for="street">Street: </label>
+            <label for="name">Street: </label>
             <input type="text" th:field="*{street}"/>
+            <div><span th:if="${#fields.hasErrors('street')}" th:errors="*{street}" class="validationError"></span></div>
 
             <label for="city">City: </label>
             <input type="text" th:field="*{city}"/>
+            <div><span th:if="${#fields.hasErrors('city')}" th:errors="*{city}" class="validationError"></span></div>
 
             <label for="state">State: </label>
             <input type="text" th:field="*{state}"/>
+            <div><span th:if="${#fields.hasErrors('state')}" th:errors="*{state}" class="validationError"></span></div>
 
             <label for="zip">Zip code: </label>
             <input type="text" th:field="*{zip}"/>
+            <div><span th:if="${#fields.hasErrors('zip')}" th:errors="*{zip}" class="validationError"></span></div>
 
             <label for="ccNumber">Credit card number: </label>
             <input type="text" th:field="*{ccNumber}"/>
+            <div><span th:if="${#fields.hasErrors('ccNumber')}" th:errors="*{ccNumber}" class="validationError"></span></div>
 
             <label for="ccExpiration">Credit card expiration date: </label>
             <input type="text" th:field="*{ccExpiration}"/>
-
+            <div><span th:if="${#fields.hasErrors('ccExpiration')}" th:errors="*{ccExpiration}" class="validationError"></span></div>
 
             <label for="ccCvv">CVV: </label>
             <input type="text" th:field="*{ccCvv}"/>
+            <div><span th:if="${#fields.hasErrors('ccCvv')}" th:errors="*{ccCvv}" class="validationError"></span></div>
 
             <p><button class="button" type="submit">Submit order</button></p>
         </div>

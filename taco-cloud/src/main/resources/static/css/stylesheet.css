@@ -10,7 +10,7 @@ body {
 
 .grid-delivery-info {
   display: grid;
-  grid-template-columns: 200px 500px;
+  grid-template-columns: 200px 500px 400px;
   padding: 10px;
 }
 
