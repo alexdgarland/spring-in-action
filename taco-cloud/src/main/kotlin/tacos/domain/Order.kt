@@ -6,17 +6,6 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
 
 data class Order(
-    val name: String,
-    val street: String,
-    val city: String,
-    val state: String,
-    val zip: String,
-    val ccNumber: String,
-    val ccExpiration: String,
-    val ccCvv: String
-)
-
-data class OrderViewModel(
     @get:NotBlank(message="Name is required")
     var name: String="",
     @get:NotBlank(message="Street is required")
@@ -34,10 +23,4 @@ data class OrderViewModel(
     var ccExpiration: String="",
     @get:Digits(integer=3, fraction=0, message="Invalid CVV")
     var ccCvv: String=""
-) {
-
-    fun toOrder(): Order {
-        return Order(name, street, city, state, zip, ccNumber, ccExpiration, ccCvv)
-    }
-
-}
+)

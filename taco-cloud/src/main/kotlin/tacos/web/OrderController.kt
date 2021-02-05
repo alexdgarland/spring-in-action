@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
-import tacos.domain.OrderViewModel
+import tacos.domain.Order
 import javax.validation.Valid
 
 @Controller
@@ -20,16 +20,16 @@ class OrderController {
     @GetMapping("/current")
     fun orderForm(model: Model): String {
         logger.info("Loading order form page")
-        model.addAttribute("order", OrderViewModel())
+        model.addAttribute("order", Order())
         return "orderForm"
     }
 
     @PostMapping
-    fun processOrder(@Valid @ModelAttribute("order") orderViewModel: OrderViewModel, errors: Errors): String {
+    fun processOrder(@Valid @ModelAttribute("order") order: Order, errors: Errors): String {
         if (errors.hasErrors()) {
             return "orderForm"
         }
-        logger.info("Order submitted: ${orderViewModel.toOrder()}")
+        logger.info("Order submitted: ${order}")
         return "redirect:/"
     }
 

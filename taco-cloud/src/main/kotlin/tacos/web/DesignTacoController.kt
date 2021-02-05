@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import tacos.domain.Ingredient
 import tacos.domain.IngredientCheckBoxViewModel
 import tacos.domain.IngredientType
-import tacos.domain.TacoDesignViewModel
+import tacos.domain.TacoDesign
 import javax.validation.Valid
 
 val availableIngredients = listOf(
@@ -31,7 +31,7 @@ val availableIngredients = listOf(
 // Not sure if under any circumstances this would be better done in JavaScript?
 fun getIngredientUiMap(
     availableIngredients: List<Ingredient>,
-    designViewModel: TacoDesignViewModel
+    design: TacoDesign
 ): Map<String, List<IngredientCheckBoxViewModel>> {
     return availableIngredients
         .groupBy { ingredient -> ingredient.type.toString().toLowerCase() }
@@ -40,7 +40,7 @@ fun getIngredientUiMap(
                 IngredientCheckBoxViewModel(
                     id = ingredient.id,
                     name = ingredient.name,
-                    checked = designViewModel.ingredients.contains(ingredient.id))
+                    checked = design.ingredients.contains(ingredient.id))
             }
         }
 }
@@ -51,30 +51,29 @@ class DesignTacoController {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    fun setUpDesignPage(uiModel: Model, designViewModel: TacoDesignViewModel): String {
+    fun setUpDesignPage(uiModel: Model, design: TacoDesign): String {
         logger.info("Loading taco design page")
-        val ingredientUiMap = getIngredientUiMap(availableIngredients, designViewModel)
+        val ingredientUiMap = getIngredientUiMap(availableIngredients, design)
         uiModel.addAttribute("ingredientMap", ingredientUiMap)
         ingredientUiMap.forEach { uiModel.addAttribute(it.key, it.value) }
-        uiModel.addAttribute("design", designViewModel)
+        uiModel.addAttribute("design", design)
         return "design"
     }
 
     @GetMapping
-    fun showDesignForm(uiModel: Model): String = setUpDesignPage(uiModel, TacoDesignViewModel())
+    fun showDesignForm(uiModel: Model): String = setUpDesignPage(uiModel, TacoDesign())
 
     @PostMapping
     fun processDesign(
         uiModel: Model,
-        @Valid @ModelAttribute("design") designViewModel: TacoDesignViewModel,
+        @Valid @ModelAttribute("design") design: TacoDesign,
         errors: Errors
     ): String {
         if (errors.hasErrors()) {
-            return setUpDesignPage(uiModel, designViewModel)
+            return setUpDesignPage(uiModel, design)
         }
-        val tacoDesign = designViewModel.toTacoDesign()
-        logger.info("Processing design \"${tacoDesign.name}\"")
-        logger.info("Ingredients:\n${tacoDesign.ingredients.map { "  - ${it.name}" }.joinToString("\n")}")
+        logger.info("Processing design \"${design.name}\"")
+        logger.info("Ingredients:\n${design.ingredients.joinToString("\n")}")
         return "redirect:/orders/current"
     }
 
