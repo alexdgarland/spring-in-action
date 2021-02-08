@@ -7,7 +7,7 @@ import tacos.domain.Ingredient
 import tacos.domain.IngredientType
 
 @Testcontainers
-class PostgresqlIngredientRepositoryIntegrationTest(): AbstractPostgresqlRepositoryTest() {
+class PostgresqlIngredientRepositoryIntegrationTest: AbstractPostgresqlRepositoryTest() {
 
     @Test
     fun canSaveAndRetrieveIngredient() {

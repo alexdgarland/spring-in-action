@@ -1,6 +1,4 @@
 
--- TODO - this is defined for Postgres (not H2) so need to set up Spring (& Docker Compose) so the actual app can use it
-
 CREATE TABLE IF NOT EXISTS ingredient (
     ingredient_id       VARCHAR(4) NOT NULL PRIMARY KEY,
     ingredient_name     VARCHAR(25) NOT NULL,
