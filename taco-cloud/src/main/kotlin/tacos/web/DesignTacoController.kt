@@ -14,6 +14,7 @@ import tacos.domain.IngredientType
 import tacos.domain.TacoDesign
 import javax.validation.Valid
 
+// TODO - replace with database call
 val availableIngredients = listOf(
     Ingredient("FLTO", "Flour Tortilla", IngredientType.WRAP),
     Ingredient("COTO", "Corn Tortilla", IngredientType.WRAP),

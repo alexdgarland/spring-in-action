@@ -20,7 +20,12 @@ abstract class AbstractPostgresqlRepositoryTest {
         .withExposedPorts(5432)
         .withFileSystemBind(
             "src/main/resources/schema.sql",
-            "/docker-entrypoint-initdb.d/schema.sql",
+            "/docker-entrypoint-initdb.d/01-schema.sql",
+            BindMode.READ_ONLY
+        )
+        .withFileSystemBind(
+            "src/main/resources/data.sql",
+            "/docker-entrypoint-initdb.d/02-data.sql",
             BindMode.READ_ONLY
         )
 
