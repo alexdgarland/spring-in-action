@@ -6,7 +6,7 @@ interface IngredientRepository {
 
     fun findAll(): Iterable<Ingredient>
 
-    fun findOne(id: String): Ingredient
+    fun findOne(ingredientId: String): Ingredient
 
     fun save(ingredient: Ingredient): Ingredient
 

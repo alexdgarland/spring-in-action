@@ -30,17 +30,22 @@ class PostgresqlIngredientRepository @Autowired constructor(val jdbc: JdbcTempla
         )
     }
 
-    override fun findOne(id: String): Ingredient {
+    override fun findOne(ingredientId: String): Ingredient {
         return jdbc.queryForObject(
             "SELECT ingredient_id, ingredient_name, ingredient_type FROM $tableName WHERE ingredient_id=?",
             this::mapRowToIngredient,
-            id
-        )?: throw DataRetrievalException("Could not retrieve Ingredient with ID $id from database")
+            ingredientId
+        )?: throw DataRetrievalException("Could not retrieve Ingredient with ID $ingredientId from database")
     }
 
     override fun save(ingredient: Ingredient): Ingredient {
         jdbc.update(
-            "INSERT INTO $tableName (ingredient_id, ingredient_name, ingredient_type) VALUES (?, ?, ?)",
+            "INSERT INTO $tableName (ingredient_id, ingredient_name, ingredient_type)\n" +
+                    "    VALUES (?, ?, ?)" +
+                    "    ON CONFLICT(ingredient_id) DO\n" +
+                    "        UPDATE SET\n" +
+                    "            ingredient_name = EXCLUDED.ingredient_name,\n" +
+                    "            ingredient_type = EXCLUDED.ingredient_type",
             ingredient.id,
             ingredient.name,
             ingredient.type.toString()
