@@ -44,7 +44,6 @@ class DesignTacoController(@Autowired val ingredientRepository: IngredientReposi
         val availableIngredients = ingredientRepository.findAll()
         val ingredientUiMap = getIngredientUiMap(availableIngredients, design)
         uiModel.addAttribute("ingredientMap", ingredientUiMap)
-        ingredientUiMap.forEach { uiModel.addAttribute(it.key, it.value) }
         uiModel.addAttribute("design", design)
         return "design"
     }
