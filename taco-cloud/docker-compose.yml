@@ -1,0 +1,21 @@
+version: '2.1'
+services:
+
+  taco-postgres:
+    image: postgres:13.1
+    environment:
+      - POSTGRES_USER=tacos
+      - POSTGRES_PASSWORD=tacos
+      - POSTGRES_DB=tacos
+    ports:
+      - "5432:5432"
+    expose:
+      - 5432
+
+  taco-webserver:
+    image: taco-cloud
+    restart: always
+    depends_on:
+      - taco-postgres
+    ports:
+      - "8080:8080"
