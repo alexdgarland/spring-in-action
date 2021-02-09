@@ -2,9 +2,23 @@ package tacos.web
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import tacos.domain.Ingredient
 import tacos.domain.IngredientCheckBoxViewModel
+import tacos.domain.IngredientType
 import tacos.domain.TacoDesign
 
+val availableIngredients = listOf(
+    Ingredient("FLTO", "Flour Tortilla", IngredientType.WRAP),
+    Ingredient("COTO", "Corn Tortilla", IngredientType.WRAP),
+    Ingredient("GRBF", "Ground Beef", IngredientType.PROTEIN),
+    Ingredient("CARN", "Carnitas", IngredientType.PROTEIN),
+    Ingredient("TMTO", "Diced Tomatoes", IngredientType.VEGGIES),
+    Ingredient("LETC", "Lettuce", IngredientType.VEGGIES),
+    Ingredient("CHED", "Cheddar", IngredientType.CHEESE),
+    Ingredient("JACK", "Monterrey Jack", IngredientType.CHEESE),
+    Ingredient("SLSA", "Salsa", IngredientType.SAUCE),
+    Ingredient("SRCR", "Sour Cream", IngredientType.SAUCE)
+)
 
 class DesignTacoControllerTest {
 
