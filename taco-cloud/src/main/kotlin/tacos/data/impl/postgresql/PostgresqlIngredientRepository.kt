@@ -11,7 +11,7 @@ import java.sql.ResultSet
 class DataRetrievalException(message: String): Exception(message)
 
 @Repository
-class PostgresqlIngredientRepository(@Autowired val jdbc: JdbcTemplate): IngredientRepository {
+class PostgresqlIngredientRepository @Autowired constructor(val jdbc: JdbcTemplate): IngredientRepository {
 
     private val tableName = "ingredient"
 
@@ -41,7 +41,7 @@ class PostgresqlIngredientRepository(@Autowired val jdbc: JdbcTemplate): Ingredi
     override fun save(ingredient: Ingredient): Ingredient {
         jdbc.update(
             "INSERT INTO $tableName (ingredient_id, ingredient_name, ingredient_type) VALUES (?, ?, ?)",
-            ingredient.id?: -1,
+            ingredient.id,
             ingredient.name,
             ingredient.type.toString()
         )

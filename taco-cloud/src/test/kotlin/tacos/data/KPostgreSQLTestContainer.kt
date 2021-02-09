@@ -3,7 +3,9 @@ package tacos.data
 import org.testcontainers.containers.BindMode
 import org.testcontainers.containers.PostgreSQLContainer
 
-class KPostgreSQLTestContainer(dockerImageName: String): PostgreSQLContainer<KPostgreSQLTestContainer>(dockerImageName) {
+class KPostgreSQLTestContainer private constructor(dockerImageName: String, val port: Int):
+    PostgreSQLContainer<KPostgreSQLTestContainer>(dockerImageName)
+{
 
     fun withInitScript(source: String, target: String): KPostgreSQLTestContainer {
         return this.withFileSystemBind(
@@ -13,10 +15,13 @@ class KPostgreSQLTestContainer(dockerImageName: String): PostgreSQLContainer<KPo
         )
     }
 
+    val mappedPort: Int
+    get() = getMappedPort(port)
+
     companion object {
 
         fun create(dockerImageName: String = "postgres:13.1", port: Int = 5432): KPostgreSQLTestContainer {
-            return KPostgreSQLTestContainer(dockerImageName).withExposedPorts(port)
+            return KPostgreSQLTestContainer(dockerImageName, port).withExposedPorts(port)
         }
 
     }

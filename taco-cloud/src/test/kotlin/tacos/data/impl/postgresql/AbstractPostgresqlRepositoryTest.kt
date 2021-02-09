@@ -19,10 +19,10 @@ abstract class AbstractPostgresqlRepositoryTest {
     val template: JdbcTemplate
     get() {
         val dataSource = PGSimpleDataSource()
-        dataSource.serverName = postgresContainer.getHost()
-        dataSource.user = postgresContainer.getUsername()
-        dataSource.password = postgresContainer.getPassword()
-        dataSource.portNumber = postgresContainer.getMappedPort(5432)
+        dataSource.serverName = postgresContainer.host
+        dataSource.user = postgresContainer.username
+        dataSource.password = postgresContainer.password
+        dataSource.portNumber = postgresContainer.mappedPort
         return JdbcTemplate(dataSource)
     }
 

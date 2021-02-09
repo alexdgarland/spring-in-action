@@ -12,8 +12,9 @@ CREATE TABLE IF NOT EXISTS taco_design (
 );
 
 CREATE TABLE IF NOT EXISTS taco_design_ingredients (
-    taco_design_id      BIGINT NOT NULL PRIMARY KEY,
-    ingredient_id       VARCHAR(4) NOT NULL
+    taco_design_id      BIGINT NOT NULL,
+    ingredient_id       VARCHAR(4) NOT NULL,
+    PRIMARY KEY(taco_design_id, ingredient_id)
 );
 
 ALTER TABLE taco_design_ingredients
