@@ -1,6 +1,7 @@
 package tacos.data.impl.postgresql
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Testcontainers
 import tacos.domain.TacoDesign
@@ -47,7 +48,7 @@ class PostgresqlTacoDesignRepositoryIntegrationTest: AbstractPostgresqlRepositor
         val originalTacoDesign = TacoDesign(
             name=designName, ingredients=ingredients, createdDate=originalDate, updatedDate=originalDate
         )
-        val designId = repository.save(originalTacoDesign).id?: throw RuntimeException("Test should get a returned ID")
+        val designId = repository.save(originalTacoDesign).id?: fail("Test should get a returned ID")
 
         // Run an update
         val newName = "New and improved!"

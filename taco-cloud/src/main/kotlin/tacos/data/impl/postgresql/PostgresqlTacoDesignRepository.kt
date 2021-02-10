@@ -37,46 +37,28 @@ class PostgresqlTacoDesignRepository @Autowired constructor(val jdbc: JdbcTempla
 
     override fun save(design: TacoDesign): TacoDesign {
         val saveDate = dateProvider.getCurrentDate()
-        val saveTimestamp = Timestamp(saveDate.getTime())
+        val saveTs = Timestamp(saveDate.getTime())
 
-        val savedDesign = if (design.id == null) {
-            val psc = createDesignPscFactory.newPreparedStatementCreator(
-                listOf(design.name, saveTimestamp, saveTimestamp)
-            )
+        val (id, createdDate) = if (design.id == null) {
+            val psc = createDesignPscFactory.newPreparedStatementCreator(listOf(design.name, saveTs, saveTs))
             val keyHolder = GeneratedKeyHolder()
             jdbc.update(psc, keyHolder)
-            TacoDesign(
-                id = keyHolder.keys?.get("taco_design_id") as Long,
-                name = design.name,
-                ingredients = design.ingredients,
-                createdDate = saveDate,
-                updatedDate = saveDate
-            )
+            Pair(keyHolder.keys?.get("taco_design_id") as Long, saveDate)
         }
         else {
             val psc = updateDesignPscFactory.newPreparedStatementCreator(
-                listOf(design.name, design.createdDate, saveTimestamp, design.id)
+                listOf(design.name, design.createdDate, saveTs, design.id)
             )
             jdbc.update(psc)
-            TacoDesign(
-                id = design.id,
-                name = design.name,
-                ingredients = design.ingredients,
-                createdDate = design.createdDate,
-                updatedDate = saveDate
-            )
+            jdbc.execute("DELETE FROM taco_design_ingredients WHERE taco_design_id = ${design.id}")
+            Pair(design.id, design.createdDate)
         }
-
-        jdbc.execute("DELETE FROM taco_design_ingredients WHERE taco_design_id = ${design.id}")
 
         design.ingredients.forEach {
-            jdbc.update(
-                "INSERT INTO taco_design_ingredients (taco_design_id, ingredient_id) VALUES (?, ?)",
-                savedDesign.id, it
-            )
+            jdbc.update("INSERT INTO taco_design_ingredients (taco_design_id, ingredient_id) VALUES (?, ?)", id, it)
         }
-        savedDesign.ingredients = design.ingredients
-        return savedDesign
+
+        return TacoDesign(id, design.name, design.ingredients, createdDate, updatedDate = saveDate)
     }
 
     private fun mapRowToTacoDesign(rs: ResultSet, rowNum: Int): TacoDesign {
