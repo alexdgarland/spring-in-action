@@ -6,4 +6,6 @@ interface TacoDesignRepository {
 
     fun save(design: TacoDesign): TacoDesign
 
+    fun findOne(designId: Long): TacoDesign
+
 }

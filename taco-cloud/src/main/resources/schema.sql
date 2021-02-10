@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS ingredient (
 CREATE TABLE IF NOT EXISTS taco_design (
     taco_design_id      BIGSERIAL PRIMARY KEY,
     taco_design_name    VARCHAR(50) NOT NULL,
-    created_at          TIMESTAMP NOT NULL
+    created_at          TIMESTAMP NOT NULL,
+    updated_at          TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS taco_design_ingredients (

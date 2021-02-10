@@ -4,11 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 import tacos.data.IngredientRepository
+import tacos.data.impl.DataRetrievalException
 import tacos.domain.Ingredient
 import tacos.domain.IngredientType
 import java.sql.ResultSet
-
-class DataRetrievalException(message: String): Exception(message)
 
 @Repository
 class PostgresqlIngredientRepository @Autowired constructor(val jdbc: JdbcTemplate): IngredientRepository {

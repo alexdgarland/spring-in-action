@@ -6,7 +6,9 @@ import org.springframework.jdbc.core.PreparedStatementCreatorFactory
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.stereotype.Repository
 import tacos.data.TacoDesignRepository
+import tacos.data.impl.DataRetrievalException
 import tacos.domain.TacoDesign
+import java.sql.ResultSet
 import java.sql.Timestamp
 import java.sql.Types
 import java.util.*
@@ -17,36 +19,90 @@ class PostgresqlTacoDesignRepository @Autowired constructor(val jdbc: JdbcTempla
     TacoDesignRepository
 {
 
-    private val designInsertPscFactory = run {
+    private val createDesignPscFactory = run {
         val factory = PreparedStatementCreatorFactory(
-            "INSERT INTO taco_design (taco_design_name, created_at) VALUES (?, ?)",
-            Types.VARCHAR, Types.TIMESTAMP
+            "INSERT INTO taco_design (taco_design_name, created_at, updated_at) VALUES (?, ?, ?)",
+            Types.VARCHAR, Types.TIMESTAMP, Types.TIMESTAMP
         )
         factory.setReturnGeneratedKeys(true)
         factory
     }
 
-    private fun saveDesignInfo(designName: String, createdDate: Date): Long {
-        val psc = designInsertPscFactory.newPreparedStatementCreator(
-            listOf(designName, Timestamp(createdDate.getTime()))
-        )
-        val keyHolder = GeneratedKeyHolder()
-        jdbc.update(psc, keyHolder)
-        return keyHolder.keys?.get("taco_design_id") as Long
-    }
+    private val updateDesignPscFactory = PreparedStatementCreatorFactory(
+        "UPDATE taco_design SET taco_design_name=?, created_at=?, updated_at=? WHERE taco_design_id=?",
+        Types.VARCHAR, Types.TIMESTAMP, Types.TIMESTAMP, Types.BIGINT
+    )
 
-    private fun saveIngredientToDesign(ingredientId: String, tacoDesignId: Long) {
-        jdbc.update(
-            "INSERT INTO taco_design_ingredients (taco_design_id, ingredient_id) VALUES (?, ?)",
-            tacoDesignId, ingredientId
-        )
-    }
+    //  Not sure if this offers a better option for audit dates once we switch to entities - http://bit.ly/2YZNkOq
 
     override fun save(design: TacoDesign): TacoDesign {
-        val createdDate = dateProvider.getCurrentDate()
-        val designId = saveDesignInfo(design.name, createdDate)
-        design.ingredients.forEach { saveIngredientToDesign(it, designId) }
-        return TacoDesign(id=designId, name=design.name, ingredients = design.ingredients, createdDate)
+        val saveDate = dateProvider.getCurrentDate()
+        val saveTimestamp = Timestamp(saveDate.getTime())
+
+        val savedDesign = if (design.id == null) {
+            val psc = createDesignPscFactory.newPreparedStatementCreator(
+                listOf(design.name, saveTimestamp, saveTimestamp)
+            )
+            val keyHolder = GeneratedKeyHolder()
+            jdbc.update(psc, keyHolder)
+            TacoDesign(
+                id = keyHolder.keys?.get("taco_design_id") as Long,
+                name = design.name,
+                ingredients = design.ingredients,
+                createdDate = saveDate,
+                updatedDate = saveDate
+            )
+        }
+        else {
+            val psc = updateDesignPscFactory.newPreparedStatementCreator(
+                listOf(design.name, design.createdDate, saveTimestamp, design.id)
+            )
+            jdbc.update(psc)
+            TacoDesign(
+                id = design.id,
+                name = design.name,
+                ingredients = design.ingredients,
+                createdDate = design.createdDate,
+                updatedDate = saveDate
+            )
+        }
+
+        jdbc.execute("DELETE FROM taco_design_ingredients WHERE taco_design_id = ${design.id}")
+
+        design.ingredients.forEach {
+            jdbc.update(
+                "INSERT INTO taco_design_ingredients (taco_design_id, ingredient_id) VALUES (?, ?)",
+                savedDesign.id, it
+            )
+        }
+        savedDesign.ingredients = design.ingredients
+        return savedDesign
+    }
+
+    private fun mapRowToTacoDesign(rs: ResultSet, rowNum: Int): TacoDesign {
+        return TacoDesign(
+            rs.getLong("taco_design_id"),
+            rs.getString("taco_design_name"),
+            emptyList(),
+            Date(rs.getTimestamp("created_at").time),
+            Date(rs.getTimestamp("updated_at").time)
+        )
+    }
+
+    override fun findOne(designId: Long): TacoDesign {
+        val tacoDesign = jdbc.queryForObject(
+            "SELECT taco_design_id, taco_design_name, created_at, updated_at FROM taco_design WHERE taco_design_id=?",
+            this::mapRowToTacoDesign,
+            designId
+        )?: throw DataRetrievalException("Could not retrieve TacoDesign with ID $designId from database")
+        val ingredients = mutableListOf<String>()
+        jdbc.query(
+            "SELECT ingredient_id FROM taco_design_ingredients WHERE taco_design_id=$designId"
+        ) { rs ->
+            ingredients.add(rs.getString("ingredient_id"))
+        }
+        tacoDesign.ingredients = ingredients
+        return tacoDesign
     }
 
 }

@@ -23,19 +23,46 @@ class PostgresqlTacoDesignRepositoryIntegrationTest: AbstractPostgresqlRepositor
     private val testDate = SimpleDateFormat("yyyy-MM-dd").parse("2021-01-24")
     private val dateProvider = FixedTestDateProvider(testDate)
 
+    private val repository
+    get() = PostgresqlTacoDesignRepository(template, dateProvider)
+
     @Test
-    fun canSaveTacoDesignWithNoExistingId() {
-        val repository = PostgresqlTacoDesignRepository(template, dateProvider)
+    fun canSaveNewTacoDesign() {
         val originalTacoDesign = TacoDesign(name=designName, ingredients=ingredients)
 
         val savedTacoDesign = repository.save(originalTacoDesign)
-        val expectedSavedTacoDesign = TacoDesign(id=1, name=designName, ingredients=ingredients, createdDate = testDate)
-        assertEquals(expectedSavedTacoDesign, savedTacoDesign)
 
-        // TODO - retrieve using repository.findOne(savedTacoDesign.id) and make sure it comes back as expected
+        val expectedId: Long = 1
+        val expectedSavedTacoDesign = TacoDesign(
+            id=expectedId, name=designName, ingredients=ingredients, createdDate=testDate, updatedDate=testDate
+        )
+        assertEquals(expectedSavedTacoDesign, savedTacoDesign)
+        assertEquals(expectedSavedTacoDesign, repository.findOne(expectedId))
     }
 
+    @Test
+    fun canUpdateExistingTacoDesign() {
+        // Set up preexisting record
+        val originalDate = SimpleDateFormat("yyyy-MM-dd").parse("2021-01-23")
+        val originalTacoDesign = TacoDesign(
+            name=designName, ingredients=ingredients, createdDate=originalDate, updatedDate=originalDate
+        )
+        val designId = repository.save(originalTacoDesign).id?: throw RuntimeException("Test should get a returned ID")
 
-// TODO - add a test where ID is already populated (update existing record)
+        // Run an update
+        val newName = "New and improved!"
+        val newIngredients = listOf("FLTO", "GRBF", "TMTO", "JACK", "SLSA")
+        val updatedTacoDesign = TacoDesign(
+            id=designId, name=newName, ingredients=newIngredients, createdDate=originalDate, updatedDate=originalDate
+        )
+        val savedTacoDesign = repository.save(updatedTacoDesign)
+
+        // Assert
+        val expectedSavedTacoDesign = TacoDesign(
+            id=designId, name=newName, ingredients=newIngredients,createdDate=originalDate, updatedDate=testDate
+        )
+        assertEquals(expectedSavedTacoDesign, savedTacoDesign)
+        assertEquals(expectedSavedTacoDesign, repository.findOne(designId))
+    }
 
 }

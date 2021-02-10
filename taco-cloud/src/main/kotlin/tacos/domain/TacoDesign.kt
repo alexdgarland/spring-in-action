@@ -9,5 +9,6 @@ data class TacoDesign(
     var name: String = "",
     @get:Size(min=1, message = "You must choose at least one ingredient")
     var ingredients: List<String> = emptyList(),
-    var createdDate: Date? = null
+    val createdDate: Date? = null,
+    val updatedDate: Date? = null
 )
