@@ -39,20 +39,23 @@ class PostgresqlTacoDesignRepository @Autowired constructor(val jdbc: JdbcTempla
         val saveDate = dateProvider.getCurrentDate()
         val saveTs = Timestamp(saveDate.getTime())
 
-        val (id, createdDate) = if (design.id == null) {
-            val psc = createDesignPscFactory.newPreparedStatementCreator(listOf(design.name, saveTs, saveTs))
-            val keyHolder = GeneratedKeyHolder()
-            jdbc.update(psc, keyHolder)
-            Pair(keyHolder.keys?.get("taco_design_id") as Long, saveDate)
-        }
-        else {
-            val psc = updateDesignPscFactory.newPreparedStatementCreator(
-                listOf(design.name, design.createdDate, saveTs, design.id)
-            )
-            jdbc.update(psc)
-            jdbc.execute("DELETE FROM taco_design_ingredients WHERE taco_design_id = ${design.id}")
-            Pair(design.id, design.createdDate)
-        }
+        val (id, createdDate) =
+            if (design.id == null)
+            {
+                val psc = createDesignPscFactory.newPreparedStatementCreator(listOf(design.name, saveTs, saveTs))
+                val keyHolder = GeneratedKeyHolder()
+                jdbc.update(psc, keyHolder)
+                Pair(keyHolder.keys?.get("taco_design_id") as Long, saveDate)
+            }
+            else
+            {
+                val psc = updateDesignPscFactory.newPreparedStatementCreator(
+                    listOf(design.name, design.createdDate, saveTs, design.id)
+                )
+                jdbc.update(psc)
+                jdbc.execute("DELETE FROM taco_design_ingredients WHERE taco_design_id = ${design.id}")
+                Pair(design.id, design.createdDate)
+            }
 
         design.ingredients.forEach {
             jdbc.update("INSERT INTO taco_design_ingredients (taco_design_id, ingredient_id) VALUES (?, ?)", id, it)

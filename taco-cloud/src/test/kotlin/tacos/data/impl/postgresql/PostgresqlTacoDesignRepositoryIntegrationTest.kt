@@ -6,15 +6,6 @@ import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Testcontainers
 import tacos.domain.TacoDesign
 import java.text.SimpleDateFormat
-import java.util.*
-
-class FixedTestDateProvider(val date: Date): DateProvider {
-
-    override fun getCurrentDate(): Date {
-        return date
-    }
-
-}
 
 @Testcontainers
 class PostgresqlTacoDesignRepositoryIntegrationTest: AbstractPostgresqlRepositoryTest() {

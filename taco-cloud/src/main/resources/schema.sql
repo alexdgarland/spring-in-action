@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS taco_order (
     cc_number           VARCHAR(16) NOT NULL,
     cc_expiration       VARCHAR(5) NOT NULL,
     cc_cvv              VARCHAR(3) NOT NULL,
-    placed_at           TIMESTAMP NOT NULL
+    placed_at           TIMESTAMP NOT NULL,
+    updated_at          TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS taco_order_taco_designs (
