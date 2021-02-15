@@ -6,9 +6,12 @@ import org.springframework.jdbc.core.PreparedStatementCreatorFactory
 import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.stereotype.Repository
 import tacos.data.OrderRepository
+import tacos.data.impl.DataRetrievalException
 import tacos.domain.Order
+import java.sql.ResultSet
 import java.sql.Timestamp
 import java.sql.Types
+import java.util.*
 
 @Repository
 class PostgresqlOrderRepository @Autowired constructor(val jdbc: JdbcTemplate, val dateProvider: DateProvider):
@@ -55,6 +58,41 @@ class PostgresqlOrderRepository @Autowired constructor(val jdbc: JdbcTemplate, v
         )
     }
 
-    // TODO - implement findOne() (add to interface first)
+    private fun mapRowToOrder(rs: ResultSet, rowNum: Int): Order {
+        return Order(
+            rs.getLong("taco_order_id"),
+            rs.getString("delivery_name"),
+            rs.getString("delivery_street"),
+            rs.getString("delivery_city"),
+            rs.getString("delivery_state"),
+            rs.getString("delivery_zip"),
+            rs.getString("cc_number"),
+            rs.getString("cc_expiration"),
+            rs.getString("cc_cvv"),
+            mutableListOf(),
+            Date(rs.getTimestamp("placed_at").time),
+            Date(rs.getTimestamp("updated_at").time)
+        )
+    }
+
+    override fun findOne(orderId: Long): Order {
+        val order = jdbc.queryForObject(
+            "SELECT taco_order_id, delivery_name, delivery_street, delivery_city, delivery_state, delivery_zip, " +
+                    "cc_number, cc_expiration, cc_cvv, placed_at, updated_at " +
+                    "FROM taco_order WHERE taco_order_id=?",
+            this::mapRowToOrder,
+            orderId
+        )?: throw DataRetrievalException("Could not retrieve Order with ID $orderId from database")
+        // This is a bit hacky (creates other repo instance internally and explicitly uses N+1 selects)
+        // but is only a temp thing before we convert to using entities and at least avoids substantial code duplication
+        val tacoDesignRepository = PostgresqlTacoDesignRepository(jdbc, dateProvider)
+        jdbc.query(
+            "SELECT taco_design_id FROM taco_order_taco_designs WHERE taco_order_id=$orderId"
+        ){ rs ->
+            order.tacoDesigns.add(tacoDesignRepository.findOne(rs.getLong("taco_design_id")))
+        }
+        // </hack>
+        return order
+    }
 
 }

@@ -48,7 +48,7 @@ class PostgresqlOrderRepositoryIntegrationTest: AbstractPostgresqlRepositoryTest
             tacoDesigns = tacoDesigns, placedDate = testDate, updatedDate = testDate
         )
         assertEquals(expectedSavedOrder, savedOrder)
-//        assertEquals(expectedSavedTacoDesign, repository.findOne(expectedId))
+        assertEquals(expectedSavedOrder, repository.findOne(expectedOrderId))
     }
 
     @Test

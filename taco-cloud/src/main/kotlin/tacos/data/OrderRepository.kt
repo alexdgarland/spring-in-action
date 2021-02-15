@@ -6,4 +6,6 @@ interface OrderRepository {
 
     fun save(order: Order): Order
 
+    fun findOne(orderId: Long): Order
+
 }
