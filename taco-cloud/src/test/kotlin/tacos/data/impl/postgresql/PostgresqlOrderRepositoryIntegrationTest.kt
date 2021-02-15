@@ -1,6 +1,7 @@
 package tacos.data.impl.postgresql
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Testcontainers
 import tacos.domain.Order
@@ -26,14 +27,20 @@ class PostgresqlOrderRepositoryIntegrationTest: AbstractPostgresqlRepositoryTest
     private val repository
     get() = PostgresqlOrderRepository(template, dateProvider)
 
+    private val designRepository
+    get() = PostgresqlTacoDesignRepository(template, dateProvider)
+
+    private val design1 by lazy {
+        designRepository.save(TacoDesign(name = "my first taco", ingredients = listOf("COTO", "CARN")))
+    }
+
+    private val design2 by lazy {
+        designRepository.save(TacoDesign(name = "my second taco", ingredients = listOf("FLTO", "GRBF")))
+    }
+
     @Test
     fun canSaveNewOrder() {
-        // Setup - pre-save some taco designs
-        val designRepository = PostgresqlTacoDesignRepository(template, dateProvider)
-        val tacoDesigns = mutableListOf(
-            designRepository.save(TacoDesign(name = "my first taco", ingredients = listOf("COTO", "CARN"))),
-            designRepository.save(TacoDesign(name = "my second taco", ingredients = listOf("FLTO", "GRBF")))
-        )
+        val tacoDesigns = mutableListOf(design1, design2)
 
         val originalOrder = Order(name = orderName, street = orderStreet, city = orderCity, state = orderState,
             zip = orderZip, ccNumber = orderCcNumber, ccExpiration = orderCcExpiration, ccCvv = orderCcv,
@@ -53,27 +60,33 @@ class PostgresqlOrderRepositoryIntegrationTest: AbstractPostgresqlRepositoryTest
 
     @Test
     fun canUpdateExistingOrder() {
-//        // Set up preexisting record
-//        val originalDate = SimpleDateFormat("yyyy-MM-dd").parse("2021-01-23")
-//        val originalTacoDesign = TacoDesign(
-//            name=designName, ingredients=ingredients, createdDate=originalDate, updatedDate=originalDate
-//        )
-//        val designId = repository.save(originalTacoDesign).id?: fail("Test should get a returned ID")
-//
-//        // Run an update
-//        val newName = "New and improved!"
-//        val newIngredients = listOf("FLTO", "GRBF", "TMTO", "JACK", "SLSA")
-//        val updatedTacoDesign = TacoDesign(
-//            id=designId, name=newName, ingredients=newIngredients, createdDate=originalDate, updatedDate=originalDate
-//        )
-//        val savedTacoDesign = repository.save(updatedTacoDesign)
-//
-//        // Assert
-//        val expectedSavedTacoDesign = TacoDesign(
-//            id=designId, name=newName, ingredients=newIngredients,createdDate=originalDate, updatedDate=testDate
-//        )
-//        assertEquals(expectedSavedTacoDesign, savedTacoDesign)
-//        assertEquals(expectedSavedTacoDesign, repository.findOne(designId))
+        // Set up preexisting record
+        val originalDate = SimpleDateFormat("yyyy-MM-dd").parse("2021-01-23")
+        val originalOrder = Order(name = orderName, street = orderStreet, city = orderCity, state = orderState,
+            zip = orderZip, ccNumber = orderCcNumber, ccExpiration = orderCcExpiration, ccCvv = orderCcv,
+            tacoDesigns = mutableListOf(design1, design2), placedDate=originalDate, updatedDate=originalDate
+        )
+        val orderId = repository.save(originalOrder).id?: fail("Test should get a returned ID")
+
+        // Run an update
+        val newName = "New and improved!"
+        val newDesigns = mutableListOf(
+            design1,
+            designRepository.save(TacoDesign(name = "my third taco", ingredients = listOf("COTO", "GRBF", "SLSA")))
+        )
+        val updatedOrder = Order(id = orderId, name = newName, street = orderStreet, city = orderCity, state = orderState,
+            zip = orderZip, ccNumber = orderCcNumber, ccExpiration = orderCcExpiration, ccCvv = orderCcv,
+            tacoDesigns = newDesigns, placedDate=originalDate, updatedDate=originalDate
+        )
+        val savedOrder = repository.save(updatedOrder)
+
+        // Assert
+        val expectedSavedOrder = Order(id = orderId, name = newName, street = orderStreet, city = orderCity, state = orderState,
+            zip = orderZip, ccNumber = orderCcNumber, ccExpiration = orderCcExpiration, ccCvv = orderCcv,
+            tacoDesigns = newDesigns, placedDate=originalDate, updatedDate=testDate
+        )
+        assertEquals(expectedSavedOrder, savedOrder)
+        assertEquals(expectedSavedOrder, repository.findOne(orderId))
     }
 
 }

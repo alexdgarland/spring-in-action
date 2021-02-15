@@ -40,7 +40,8 @@ CREATE TABLE IF NOT EXISTS taco_order (
 
 CREATE TABLE IF NOT EXISTS taco_order_taco_designs (
     taco_order_id       BIGINT NOT NULL,
-    taco_design_id      BIGINT NOT NULL
+    taco_design_id      BIGINT NOT NULL,
+    PRIMARY KEY (taco_order_id, taco_design_id)
 );
 
 ALTER TABLE taco_order_taco_designs

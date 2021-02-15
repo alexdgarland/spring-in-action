@@ -31,30 +31,52 @@ class PostgresqlOrderRepository @Autowired constructor(val jdbc: JdbcTemplate, v
         factory
     }
 
-    override fun save(order: Order): Order {
-        // TODO - handle updates to existing orders as well as creating new
-        // TODO - once this is done it may make sense to refactor to share code with PostgresqlTacoDesignRepository
-        // (as an exercise before moving everything to use entities)
+    private val updateOrderPscFactory = PreparedStatementCreatorFactory(
+        "UPDATE taco_order " +
+                "SET delivery_name=?, delivery_street=?, delivery_city=?, delivery_state=?, delivery_zip=?, " +
+                "cc_number=?, cc_expiration=?, cc_cvv=?, placed_at=?, updated_at=? " +
+                "WHERE taco_order_id=?",
+        Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,  Types.VARCHAR,
+        Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.TIMESTAMP, Types.TIMESTAMP,
+        Types.BIGINT
+    )
 
+    override fun save(order: Order): Order {
         val saveDate = dateProvider.getCurrentDate()
         val saveTs = Timestamp(saveDate.getTime())
 
-        val psc = createOrderPscFactory.newPreparedStatementCreator(
-            listOf(order.name, order.street, order.city, order.state, order.zip,
-                order.ccNumber, order.ccExpiration, order.ccCvv, saveTs, saveTs
-            )
-        )
-        val keyHolder = GeneratedKeyHolder()
-        jdbc.update(psc, keyHolder)
-        val generatedOrderId = keyHolder.keys?.get("taco_order_id") as Long
+        val (id, placedDate) =
+            if (order.id == null)
+            {
+                val psc = createOrderPscFactory.newPreparedStatementCreator(
+                    listOf(order.name, order.street, order.city, order.state, order.zip,
+                        order.ccNumber, order.ccExpiration, order.ccCvv, saveTs, saveTs
+                    )
+                )
+                val keyHolder = GeneratedKeyHolder()
+                jdbc.update(psc, keyHolder)
+                Pair(keyHolder.keys?.get("taco_order_id") as Long, saveDate)
+            }
+            else
+            {
+                val psc = updateOrderPscFactory.newPreparedStatementCreator(
+                    listOf(order.name, order.street, order.city, order.state, order.zip,
+                        order.ccNumber, order.ccExpiration, order.ccCvv, order.placedDate, saveTs,
+                        order.id
+                    )
+                )
+                jdbc.update(psc)
+                jdbc.execute("DELETE FROM taco_order_taco_designs WHERE taco_order_id = ${order.id}")
+                Pair(order.id, order.placedDate)
+            }
 
         order.tacoDesigns.forEach { design ->
             jdbc.update("INSERT INTO taco_order_taco_designs (taco_order_id, taco_design_id) VALUES (?, ?)",
-                generatedOrderId, design.id)
+                id, design.id)
         }
 
-        return Order(generatedOrderId, order.name, order.street, order.city, order.state, order.zip,
-            order.ccNumber, order.ccExpiration, order.ccCvv, order.tacoDesigns, saveDate, saveDate
+        return Order(id, order.name, order.street, order.city, order.state, order.zip,
+            order.ccNumber, order.ccExpiration, order.ccCvv, order.tacoDesigns, placedDate, saveDate
         )
     }
 
