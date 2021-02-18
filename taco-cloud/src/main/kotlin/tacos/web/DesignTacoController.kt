@@ -5,13 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.Errors
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.ModelAttribute
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.*
 import tacos.data.IngredientRepository
+import tacos.data.TacoDesignRepository
 import tacos.domain.Ingredient
 import tacos.domain.IngredientCheckBoxViewModel
+import tacos.domain.Order
 import tacos.domain.TacoDesign
 import javax.validation.Valid
 
@@ -34,8 +33,13 @@ fun getIngredientUiMap(
 }
 
 @Controller
+@SessionAttributes("order")
 @RequestMapping("/design")
-class DesignTacoController(@Autowired val ingredientRepository: IngredientRepository) {
+class DesignTacoController @Autowired constructor(
+    val ingredientRepository: IngredientRepository,
+    val tacoDesignRepository: TacoDesignRepository,
+    @ModelAttribute(name = "order") val order: Order
+    ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -54,7 +58,7 @@ class DesignTacoController(@Autowired val ingredientRepository: IngredientReposi
     @PostMapping
     fun processDesign(
         uiModel: Model,
-        @Valid @ModelAttribute("design") design: TacoDesign,
+        @Valid @ModelAttribute(name = "design") design: TacoDesign,
         errors: Errors
     ): String {
         if (errors.hasErrors()) {
@@ -62,6 +66,13 @@ class DesignTacoController(@Autowired val ingredientRepository: IngredientReposi
         }
         logger.info("Processing design \"${design.name}\"")
         logger.info("Ingredients:\n${design.ingredients.joinToString("\n")}")
+
+        val savedDesign = tacoDesignRepository.save(design)
+        order.tacoDesigns.add(savedDesign)
+
+        logger.info("Current state of order is: ${order.toString()}")
+
+        uiModel.addAttribute("order", order)
         return "redirect:/orders/current"
     }
 

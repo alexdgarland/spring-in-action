@@ -64,3 +64,5 @@ ALTER TABLE taco_order_taco_designs
 
 ALTER TABLE taco_order_taco_designs
     ADD FOREIGN KEY (taco_design_id) REFERENCES taco_design(taco_design_id);
+
+-- TODO - add a view to see all rows/ fields for an order as well

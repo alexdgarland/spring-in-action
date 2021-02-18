@@ -1,12 +1,14 @@
 package tacos.domain
 
 import org.hibernate.validator.constraints.CreditCardNumber
+import org.springframework.stereotype.Component
 import java.util.*
 import javax.validation.constraints.Digits
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
 
+@Component
 data class Order(
     val id: Long? = null,
     @get:NotBlank(message="Name is required")

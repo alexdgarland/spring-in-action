@@ -7,10 +7,21 @@
     <link rel="stylesheet" th:href="@{/css/stylesheet.css}" />
 </head>
 <body>
+
+    <h1>Order your taco creations!</h1>
+    <img th:src="@{/images/TacoCloud.png}" width="300"/>
+
+    <div th:each="design : ${order.tacoDesigns}">
+    <!-- TODO turn this into a proper grid display of all the designs that will be included in the order -->
+        <div class="taco-design">
+            <span th:text="${design.name + ' ' + design.createdDate}">DESIGN</span>
+        </div>
+    </div>
+
+    <p><a th:href="@{/design}" id="another">Design another taco</a></p>
+
     <form method="POST" th:action="@{/orders}" th:object="${order}">
-        <h1>Order your taco creations!</h1>
-        <img th:src="@{/images/TacoCloud.png}" width="300"/>
-        <p><a th:href="@{/design}" id="another">Design another taco</a></p>
+
 
         <div th:if="${#fields.hasErrors()}">
             <span class="validationError">
@@ -26,7 +37,7 @@
             <input type="text" th:field="*{name}"/>
             <div><span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="validationError"></span></div>
 
-            <label for="name">Street: </label>
+            <label for="street">Street: </label>
             <input type="text" th:field="*{street}"/>
             <div><span th:if="${#fields.hasErrors('street')}" th:errors="*{street}" class="validationError"></span></div>
 
