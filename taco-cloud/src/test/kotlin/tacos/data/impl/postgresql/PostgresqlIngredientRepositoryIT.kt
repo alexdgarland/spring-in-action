@@ -7,7 +7,7 @@ import tacos.domain.Ingredient
 import tacos.domain.IngredientType
 
 @Testcontainers
-class PostgresqlIngredientRepositoryIntegrationTest: AbstractPostgresqlRepositoryTest() {
+class PostgresqlIngredientRepositoryIT: PostgresqlIntegrationTestWithContainer() {
 
     private val repository
     get() = PostgresqlIngredientRepository(template)

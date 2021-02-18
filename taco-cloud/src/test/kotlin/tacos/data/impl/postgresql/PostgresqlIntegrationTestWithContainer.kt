@@ -5,11 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.testcontainers.junit.jupiter.Container
 import tacos.data.KPostgreSQLTestContainer
 
-// TODO - maybe separate integration tests from unit test execution using Failsafe plugin or similar
-
-// TODO - remove this suppression once the abstract class is used in multiple tests
-@Suppress("UnnecessaryAbstractClass")
-abstract class AbstractPostgresqlRepositoryTest {
+open class PostgresqlIntegrationTestWithContainer {
 
     @Container
     val postgresContainer: KPostgreSQLTestContainer = KPostgreSQLTestContainer.create()

@@ -8,7 +8,7 @@ import tacos.domain.TacoDesign
 import java.text.SimpleDateFormat
 
 @Testcontainers
-class PostgresqlTacoDesignRepositoryIntegrationTest: AbstractPostgresqlRepositoryTest() {
+class PostgresqlTacoDesignRepositoryIT: PostgresqlIntegrationTestWithContainer() {
 
     private val designName = "my taco design"
     private val ingredients = listOf("COTO", "GRBF", "TMTO", "JACK", "SLSA")

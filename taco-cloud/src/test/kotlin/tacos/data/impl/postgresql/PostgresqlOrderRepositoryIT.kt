@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat
 
 
 @Testcontainers
-class PostgresqlOrderRepositoryIntegrationTest: AbstractPostgresqlRepositoryTest() {
+class PostgresqlOrderRepositoryIT: PostgresqlIntegrationTestWithContainer() {
 
     private val orderName = "my order"
     private val orderStreet = "25 Some Street"
