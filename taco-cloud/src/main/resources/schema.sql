@@ -24,6 +24,21 @@ ALTER TABLE taco_design_ingredients
 ALTER TABLE taco_design_ingredients
     ADD FOREIGN KEY (ingredient_id) REFERENCES ingredient(ingredient_id);
 
+CREATE OR REPLACE VIEW v_taco_design
+AS
+    SELECT  td.taco_design_id,
+            td.taco_design_name,
+            td.created_at,
+            td.updated_at,
+            i.ingredient_id,
+            i.ingredient_name,
+            i.ingredient_type
+    FROM    taco_design AS td
+            INNER JOIN taco_design_ingredients AS tdi
+                ON tdi.taco_design_id = td.taco_design_id
+            INNER JOIN ingredient AS i
+                ON i.ingredient_id = tdi.ingredient_id;
+
 CREATE TABLE IF NOT EXISTS taco_order (
     taco_order_id       BIGSERIAL PRIMARY KEY,
     delivery_name       VARCHAR(50) NOT NULL,
