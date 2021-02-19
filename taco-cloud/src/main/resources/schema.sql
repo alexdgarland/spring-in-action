@@ -65,4 +65,28 @@ ALTER TABLE taco_order_taco_designs
 ALTER TABLE taco_order_taco_designs
     ADD FOREIGN KEY (taco_design_id) REFERENCES taco_design(taco_design_id);
 
--- TODO - add a view to see all rows/ fields for an order as well
+CREATE OR REPLACE VIEW v_taco_order
+AS
+    SELECT  tor.taco_order_id,
+            tor.delivery_name,
+            tor.delivery_street,
+            tor.delivery_city,
+            tor.delivery_state,
+            tor.delivery_zip,
+            tor.cc_number,
+            tor.cc_expiration,
+            tor.cc_cvv,
+            tor.placed_at           AS order_placed_at,
+            tor.updated_at          AS order_updated_at,
+            vtd.taco_design_id,
+            vtd.taco_design_name,
+            vtd.created_at          AS design_created_at,
+            vtd.updated_at          AS design_updated_at,
+            vtd.ingredient_id,
+            vtd.ingredient_name,
+            vtd.ingredient_type
+    FROM    taco_order AS tor
+            INNER JOIN taco_order_taco_designs AS totd
+                ON totd.taco_order_id = tor.taco_order_id
+            INNER JOIN v_taco_design AS vtd
+                ON vtd.taco_design_id = totd.taco_design_id;
