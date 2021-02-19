@@ -2,13 +2,22 @@ body {
   background-color: #1fad6b;
 }
 
+table, th, td {
+    border: 1px solid black;
+    background-color: #6cebbe;
+}
+
+table {
+    border-collapse: collapse;
+}
+
 .grid-design-ingredients {
   display: grid;
   grid-template-columns: 300px 300px 300px;
   padding: 10px;
 }
 
-.grid-delivery-info {
+.grid-order-delivery-info {
   display: grid;
   grid-template-columns: 200px 500px 400px;
   padding: 10px;

@@ -11,17 +11,34 @@
     <h1>Order your taco creations!</h1>
     <img th:src="@{/images/TacoCloud.png}" width="300"/>
 
-    <div th:each="design : ${order.tacoDesigns}">
-    <!-- TODO turn this into a proper grid display of all the designs that will be included in the order -->
-        <div class="taco-design">
-            <span th:text="${design.name + ' ' + design.createdDate}">DESIGN</span>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Design Name</th>
+            <th>Ingredients</th>
+        </tr>
+        <div th:each="design : ${designs}">
+            <tr>
+                <td th:text="${design.id}">DESIGN_ID</td>
+                <td th:text="${design.name}">DESIGN_NAME</td>
+                <td>
+                    <ul>
+                        <div th:each="description : ${design.ingredientDescriptions}">
+                            <li th:text="${description}">INGREDIENT</li>
+                        </div>
+                    </ul>
+                </td>
+            </tr>
         </div>
+    </table>
+
+    <div class="grid-order-designs">
+
     </div>
 
     <p><a th:href="@{/design}" id="another">Design another taco</a></p>
 
     <form method="POST" th:action="@{/orders}" th:object="${order}">
-
 
         <div th:if="${#fields.hasErrors()}">
             <span class="validationError">
@@ -31,7 +48,7 @@
 
         <h3>Deliver my taco masterpieces to...</h3>
 
-        <div class="grid-delivery-info">
+        <div class="grid-order-delivery-info">
 
             <label for="name">Name: </label>
             <input type="text" th:field="*{name}"/>
