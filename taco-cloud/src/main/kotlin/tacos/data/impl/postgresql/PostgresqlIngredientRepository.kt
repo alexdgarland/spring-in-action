@@ -29,10 +29,6 @@ class PostgresqlIngredientRepository @Autowired constructor(val jdbc: JdbcTempla
         )
     }
 
-    override fun findAllAsMap(): Map<String, Ingredient> {
-        return findAll().map { it.id to it}.toMap()
-    }
-
     override fun findOne(ingredientId: String): Ingredient {
         return jdbc.queryForObject(
             "SELECT ingredient_id, ingredient_name, ingredient_type FROM $tableName WHERE ingredient_id=?",

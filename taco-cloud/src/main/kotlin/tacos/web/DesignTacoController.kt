@@ -5,11 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.Errors
-import org.springframework.web.bind.annotation.ModelAttribute
-import org.springframework.web.bind.annotation.SessionAttributes
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import tacos.data.IngredientRepository
 import tacos.data.TacoDesignRepository
@@ -30,10 +26,13 @@ class DesignTacoController @Autowired constructor(
 
     fun setUpDesignPage(uiModel: Model, design: TacoDesign): String {
         logger.info("Loading taco design page")
+
         val availableIngredients = ingredientRepository.findAll()
         val ingredientUiMap = design.getIngredientUiMap(availableIngredients)
+
         uiModel.addAttribute("ingredientMap", ingredientUiMap)
         uiModel.addAttribute("design", design)
+
         return "design"
     }
 
@@ -50,17 +49,16 @@ class DesignTacoController @Autowired constructor(
         if (errors.hasErrors()) {
             return setUpDesignPage(uiModel, design)
         }
-        logger.info("Processing design \"${design.name}\"")
-        logger.info("Ingredients:\n${design.ingredients}")
+
+        logger.info("Processing design \"${design.name}\" (ingredients: ${design.ingredients})")
 
         val savedDesign = tacoDesignRepository.save(design)
         order.tacoDesigns.add(savedDesign)
 
         logger.info("Current state of order is: ${order.toString()}")
-
         uiModel.addAttribute("order", order)
 
-        val designs = order.tacoDesigns.map { it.getWithIngredientDescriptions(ingredientRepository.findAllAsMap()) }
+        val designs = order.getDesignsWithIngredientDescription(ingredientRepository)
         logger.info("Designs in order: $designs")
         redirectAttributes.addFlashAttribute("designs", designs)
 

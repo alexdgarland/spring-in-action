@@ -2,11 +2,18 @@ package tacos.domain
 
 import org.hibernate.validator.constraints.CreditCardNumber
 import org.springframework.stereotype.Component
+import tacos.data.IngredientRepository
 import java.util.*
 import javax.validation.constraints.Digits
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
+
+data class TacoDesignWithIngredientDescriptions(
+    var id: Long,
+    var name: String,
+    var ingredientDescriptions: List<String>
+)
 
 @Component
 data class Order(
@@ -35,4 +42,29 @@ data class Order(
     val tacoDesigns: MutableList<TacoDesign> = mutableListOf(),
     val placedDate: Date? = null,
     val updatedDate: Date? = null
-)
+) {
+
+    fun getDesignsWithIngredientDescription(ingredientRepository: IngredientRepository):
+            List<TacoDesignWithIngredientDescriptions>
+    {
+        val ingredientMap = ingredientRepository.findAll().map { it.id to it}.toMap()
+
+        val getIngredientDescription = { ingredientId: String ->
+            ingredientMap
+                .get(ingredientId)
+                ?.description
+                ?: throw ViewModelConversionException("Cannot get ingredient for ID $ingredientId")
+        }
+
+        return tacoDesigns.map { design ->
+            TacoDesignWithIngredientDescriptions(
+                id = design.id
+                    ?: throw ViewModelConversionException("ID is not set for taco design with name ${design.name}"),
+                name = design.name,
+                ingredientDescriptions = design.ingredients.map(getIngredientDescription)
+            )
+        }
+
+    }
+
+}

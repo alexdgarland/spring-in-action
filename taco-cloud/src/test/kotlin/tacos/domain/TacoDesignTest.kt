@@ -11,18 +11,6 @@ import javax.validation.Validation
 
 const val DESIGN_NAME = "Mi taco"
 val ingredientList = listOf("COTO", "GRBF", "JACK", "TMTO", "LETC", "SLSA")
-val availableIngredients = listOf(
-    Ingredient("FLTO", "Flour Tortilla", IngredientType.WRAP),
-    Ingredient("COTO", "Corn Tortilla", IngredientType.WRAP),
-    Ingredient("GRBF", "Ground Beef", IngredientType.PROTEIN),
-    Ingredient("CARN", "Carnitas", IngredientType.PROTEIN),
-    Ingredient("TMTO", "Diced Tomatoes", IngredientType.VEGGIES),
-    Ingredient("LETC", "Lettuce", IngredientType.VEGGIES),
-    Ingredient("CHED", "Cheddar", IngredientType.CHEESE),
-    Ingredient("JACK", "Monterrey Jack", IngredientType.CHEESE),
-    Ingredient("SLSA", "Salsa", IngredientType.SAUCE),
-    Ingredient("SRCR", "Sour Cream", IngredientType.SAUCE)
-)
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TacoDesignTest {
@@ -102,21 +90,6 @@ class TacoDesignTest {
         val actualMap = design.getIngredientUiMap(availableIngredients)
 
         assertEquals(expectedMap, actualMap)
-    }
-
-    @Test
-    fun `getWithIngredientDescriptions should get ingredient descriptions from map`() {
-        val design = TacoDesign(id = 1, ingredients = listOf("COTO", "GRBF"))
-        val cornTortilla = Ingredient("COTO", "Corn Tortilla", IngredientType.WRAP)
-        val groundBeef = Ingredient("GRBF", "Ground Beef", IngredientType.PROTEIN)
-        val ingredientMap = mapOf("COTO" to cornTortilla, "GRBF" to groundBeef)
-
-        val designWithIngredients = design.getWithIngredientDescriptions(ingredientMap)
-
-        val expectedDesignWithIngredients = TacoDesignWithIngredientDescriptions(
-            id = 1, name = "", ingredientDescriptions = listOf(cornTortilla.description, groundBeef.description)
-        )
-        assertEquals(expectedDesignWithIngredients, designWithIngredients)
     }
 
 }

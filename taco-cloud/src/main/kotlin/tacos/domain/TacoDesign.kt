@@ -28,18 +28,4 @@ data class TacoDesign(
             }
     }
 
-    fun getWithIngredientDescriptions(ingredientMap: Map<String, Ingredient>): TacoDesignWithIngredientDescriptions {
-        val fullIngredients = ingredients.map {
-            ingredientMap.get(it)?.description?: throw ViewModelConversionException("Cannot get ingredient for ID $it")
-        }
-        val notNullId = id?: throw ViewModelConversionException("ID is not set for taco design with name $name")
-        return TacoDesignWithIngredientDescriptions(notNullId, name, fullIngredients)
-    }
-
 }
-
-data class TacoDesignWithIngredientDescriptions(
-    var id: Long,
-    var name: String,
-    var ingredientDescriptions: List<String>
-)
