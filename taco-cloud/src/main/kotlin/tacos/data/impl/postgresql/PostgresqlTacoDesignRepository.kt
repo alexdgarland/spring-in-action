@@ -3,7 +3,7 @@ package tacos.data.impl.postgresql
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory
-import org.springframework.jdbc.support.GeneratedKeyHolder
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert
 import org.springframework.stereotype.Repository
 import tacos.data.TacoDesignRepository
 import tacos.data.impl.DataRetrievalException
@@ -19,13 +19,15 @@ class PostgresqlTacoDesignRepository @Autowired constructor(val jdbc: JdbcTempla
     TacoDesignRepository
 {
 
-    private val createDesignPscFactory = run {
-        val factory = PreparedStatementCreatorFactory(
-            "INSERT INTO taco_design (taco_design_name, created_at, updated_at) VALUES (?, ?, ?)",
-            Types.VARCHAR, Types.TIMESTAMP, Types.TIMESTAMP
-        )
-        factory.setReturnGeneratedKeys(true)
-        factory
+    private val tacoDesignInserter by lazy {
+        SimpleJdbcInsert(jdbc)
+        .withTableName("taco_design")
+        .usingGeneratedKeyColumns("taco_design_id")
+    }
+
+    private val tacoDesignIngredientInserter by lazy {
+        SimpleJdbcInsert(jdbc)
+        .withTableName("taco_design_ingredients")
     }
 
     private val updateDesignPscFactory = PreparedStatementCreatorFactory(
@@ -42,10 +44,10 @@ class PostgresqlTacoDesignRepository @Autowired constructor(val jdbc: JdbcTempla
         val (id, createdDate) =
             if (design.id == null)
             {
-                val psc = createDesignPscFactory.newPreparedStatementCreator(listOf(design.name, saveTs, saveTs))
-                val keyHolder = GeneratedKeyHolder()
-                jdbc.update(psc, keyHolder)
-                Pair(keyHolder.keys?.get("taco_design_id") as Long, saveDate)
+                val designId = tacoDesignInserter.executeAndReturnKey(
+                    mapOf("taco_design_name" to design.name, "created_at" to saveTs, "updated_at" to saveTs)
+                ).toLong()
+                Pair(designId, saveDate)
             }
             else
             {
@@ -57,8 +59,8 @@ class PostgresqlTacoDesignRepository @Autowired constructor(val jdbc: JdbcTempla
                 Pair(design.id, design.createdDate)
             }
 
-        design.ingredients.forEach {
-            jdbc.update("INSERT INTO taco_design_ingredients (taco_design_id, ingredient_id) VALUES (?, ?)", id, it)
+        design.ingredients.forEach { ingredientId ->
+            tacoDesignIngredientInserter.execute(mapOf("taco_design_id" to id, "ingredient_id" to ingredientId))
         }
 
         return TacoDesign(id, design.name, design.ingredients, createdDate, updatedDate = saveDate)

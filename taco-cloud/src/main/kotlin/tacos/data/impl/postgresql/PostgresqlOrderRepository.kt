@@ -3,7 +3,7 @@ package tacos.data.impl.postgresql
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory
-import org.springframework.jdbc.support.GeneratedKeyHolder
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert
 import org.springframework.stereotype.Repository
 import tacos.data.OrderRepository
 import tacos.data.impl.DataRetrievalException
@@ -18,17 +18,13 @@ class PostgresqlOrderRepository @Autowired constructor(val jdbc: JdbcTemplate, v
     OrderRepository
 {
 
-    private val createOrderPscFactory = run {
-        val factory = PreparedStatementCreatorFactory(
-            "INSERT INTO taco_order " +
-                    "(delivery_name, delivery_street, delivery_city, delivery_state, delivery_zip, " +
-                    "cc_number, cc_expiration, cc_cvv, placed_at, updated_at) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,  Types.VARCHAR,
-            Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.TIMESTAMP, Types.TIMESTAMP
-        )
-        factory.setReturnGeneratedKeys(true)
-        factory
+    private val orderInserter by lazy {
+        SimpleJdbcInsert(jdbc).withTableName("taco_order")
+        .usingGeneratedKeyColumns("taco_order_id")
+    }
+
+    private val orderTacoDesignInserter by lazy {
+        SimpleJdbcInsert(jdbc).withTableName("taco_order_taco_designs")
     }
 
     private val updateOrderPscFactory = PreparedStatementCreatorFactory(
@@ -48,14 +44,20 @@ class PostgresqlOrderRepository @Autowired constructor(val jdbc: JdbcTemplate, v
         val (id, placedDate) =
             if (order.id == null)
             {
-                val psc = createOrderPscFactory.newPreparedStatementCreator(
-                    listOf(order.name, order.street, order.city, order.state, order.zip,
-                        order.ccNumber, order.ccExpiration, order.ccCvv, saveTs, saveTs
-                    )
+                val values = mapOf(
+                    "delivery_name" to order.name,
+                    "delivery_street" to order.street,
+                    "delivery_city" to order.city,
+                    "delivery_state" to order.state,
+                    "delivery_zip" to order.zip,
+                    "cc_number" to order.ccNumber,
+                    "cc_expiration" to order.ccExpiration,
+                    "cc_cvv" to order.ccCvv,
+                    "placed_at" to saveTs,
+                    "updated_at" to saveTs
                 )
-                val keyHolder = GeneratedKeyHolder()
-                jdbc.update(psc, keyHolder)
-                Pair(keyHolder.keys?.get("taco_order_id") as Long, saveDate)
+                val orderId = orderInserter.executeAndReturnKey(values).toLong()
+                Pair(orderId, saveDate)
             }
             else
             {
@@ -71,8 +73,7 @@ class PostgresqlOrderRepository @Autowired constructor(val jdbc: JdbcTemplate, v
             }
 
         order.tacoDesigns.forEach { design ->
-            jdbc.update("INSERT INTO taco_order_taco_designs (taco_order_id, taco_design_id) VALUES (?, ?)",
-                id, design.id)
+            orderTacoDesignInserter.execute(mapOf("taco_order_id" to id, "taco_design_id" to design.id))
         }
 
         return Order(id, order.name, order.street, order.city, order.state, order.zip,
