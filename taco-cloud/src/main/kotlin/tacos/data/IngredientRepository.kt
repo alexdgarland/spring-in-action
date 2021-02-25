@@ -1,13 +1,6 @@
 package tacos.data
 
+import org.springframework.data.repository.CrudRepository
 import tacos.domain.Ingredient
 
-interface IngredientRepository {
-
-    fun findAll(): Iterable<Ingredient>
-
-    fun findOne(ingredientId: String): Ingredient
-
-    fun save(ingredient: Ingredient): Ingredient
-
-}
+interface IngredientRepository: CrudRepository<Ingredient, String>
