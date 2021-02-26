@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.PreparedStatementCreatorFactory
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert
 import org.springframework.stereotype.Repository
 import tacos.data.OrderRepository
+import tacos.data.TacoDesignRepository
 import tacos.data.impl.DataRetrievalException
 import tacos.domain.Order
 import java.sql.ResultSet
@@ -14,8 +15,11 @@ import java.sql.Types
 import java.util.*
 
 @Repository
-class PostgresqlOrderRepository @Autowired constructor(val jdbc: JdbcTemplate, val dateProvider: DateProvider):
-    OrderRepository
+class PostgresqlOrderRepository @Autowired constructor(
+    val jdbc: JdbcTemplate,
+    val dateProvider: DateProvider,
+    val tacoDesignRepository: TacoDesignRepository
+    ): OrderRepository
 {
 
     private val orderInserter by lazy {
@@ -108,11 +112,11 @@ class PostgresqlOrderRepository @Autowired constructor(val jdbc: JdbcTemplate, v
         )?: throw DataRetrievalException("Could not retrieve Order with ID $orderId from database")
         // This is a bit hacky (creates other repo instance internally and explicitly uses N+1 selects)
         // but is only a temp thing before we convert to using entities and at least avoids substantial code duplication
-        val tacoDesignRepository = PostgresqlTacoDesignRepository(jdbc, dateProvider)
+//        val tacoDesignRepository = TacoDesignRepository(jdbc, dateProvider)
         jdbc.query(
             "SELECT taco_design_id FROM taco_order_taco_designs WHERE taco_order_id=$orderId"
         ){ rs ->
-            order.tacoDesigns.add(tacoDesignRepository.findOne(rs.getLong("taco_design_id")))
+            order.tacoDesigns.add(tacoDesignRepository.findById(rs.getLong("taco_design_id")).get())
         }
         // </hack>
         return order

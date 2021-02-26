@@ -10,7 +10,6 @@ import java.util.stream.Stream
 import javax.validation.Validation
 
 const val DESIGN_NAME = "Mi taco"
-val ingredientList = listOf("COTO", "GRBF", "JACK", "TMTO", "LETC", "SLSA")
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TacoDesignTest {
@@ -19,7 +18,7 @@ class TacoDesignTest {
 
     fun incompleteDesigns(): Stream<Arguments> {
         return Stream.of(
-            Arguments.of(TacoDesign(ingredients = ingredientList), "Name must be at least 5 characters long"),
+            Arguments.of(TacoDesign(ingredients = availableIngredients), "Name must be at least 5 characters long"),
             Arguments.of(TacoDesign(name = DESIGN_NAME), "You must choose at least one ingredient"),
         )
     }
@@ -63,7 +62,8 @@ class TacoDesignTest {
 
     @Test
     fun `getIngredientUiMap should return expected map (some checked) for populated design model`() {
-        val design = TacoDesign(100, "My taco design", listOf("COTO", "GRBF", "TMTO", "JACK", "SLSA"))
+        val design = TacoDesign(100, "My taco design",
+            getIngredients("COTO", "GRBF", "TMTO", "JACK", "SLSA"))
         val expectedMap = mapOf(
             "wrap" to listOf(
                 IngredientCheckBoxViewModel("FLTO", "Flour Tortilla", false),

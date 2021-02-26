@@ -21,6 +21,8 @@
 		<testcontainers.version>1.15.1</testcontainers.version>
 		<detekt-plugin.version>1.15.0</detekt-plugin.version>
 		<detekt.config>build/detekt.yml</detekt.config>
+		<skipTests>false</skipTests>
+		<skip.surefire.tests>${skipTests}</skip.surefire.tests>
 	</properties>
 
 	<dependencies>
@@ -175,6 +177,16 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<!--	Inherit version from Spring POMs	-->
+				<version>${maven-surefire-plugin.version}</version>
+				<configuration>
+					<!-- Skips surefire tests without skipping failsafe tests. -->
+					<skipTests>${skip.surefire.tests}</skipTests>
+				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>

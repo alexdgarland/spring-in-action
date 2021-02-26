@@ -5,32 +5,12 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.util.TestPropertyValues
-import org.springframework.context.ApplicationContextInitializer
-import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.test.context.ContextConfiguration
 import org.testcontainers.junit.jupiter.Testcontainers
 import tacos.data.IngredientRepository
-import tacos.data.KPostgreSQLTestContainer
+import tacos.data.PostgresContainerTestInitializer
 import tacos.domain.Ingredient
 import tacos.domain.IngredientType
-
-class PostgresContainerTestInitializer: ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-    override fun initialize(appContext: ConfigurableApplicationContext) {
-        val postgresContainer: KPostgreSQLTestContainer = KPostgreSQLTestContainer.create()
-            .withInitScript("schema.sql", "01-schema.sql")
-            .withInitScript("data.sql", "02-data.sql")
-        postgresContainer.start()
-
-        TestPropertyValues.of(
-            "spring.datasource.url=${postgresContainer.jdbcUrl}",
-            "spring.datasource.username=${postgresContainer.username}",
-            "spring.datasource.password=${postgresContainer.password}"
-        ).applyTo(appContext)
-    }
-
-}
 
 @Testcontainers
 @SpringBootTest

@@ -1,11 +1,6 @@
 package tacos.data
 
+import org.springframework.data.repository.CrudRepository
 import tacos.domain.TacoDesign
 
-interface TacoDesignRepository {
-
-    fun save(design: TacoDesign): TacoDesign
-
-    fun findOne(designId: Long): TacoDesign
-
-}
+interface TacoDesignRepository: CrudRepository<TacoDesign, Long>

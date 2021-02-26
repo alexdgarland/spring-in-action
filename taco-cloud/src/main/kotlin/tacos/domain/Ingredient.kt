@@ -6,7 +6,8 @@ enum class IngredientType { WRAP, PROTEIN, VEGGIES, CHEESE, SAUCE }
 
 @Entity
 data class Ingredient(
-    @Id @Column(name = "ingredient_id")
+    @Id
+    @Column(name = "ingredient_id")
     var id: String = "",
 
     @Column(name = "ingredient_name")

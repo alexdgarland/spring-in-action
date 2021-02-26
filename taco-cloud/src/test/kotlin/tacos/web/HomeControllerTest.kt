@@ -11,6 +11,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import tacos.data.IngredientRepository
 import tacos.data.OrderRepository
+import tacos.data.TacoDesignRepository
+import tacos.domain.Order
 
 @WebMvcTest
 class HomeControllerTest {
@@ -22,11 +24,16 @@ class HomeControllerTest {
     private lateinit var jdbcTemplate: JdbcTemplate
 
     @MockBean
-    private lateinit var postgresqlOrderRepository: OrderRepository
+    private lateinit var orderRepository: OrderRepository
 
     @MockBean
-    private lateinit var postgresqlIngredientRepository: IngredientRepository
+    private lateinit var ingredientRepository: IngredientRepository
 
+    @MockBean
+    private lateinit var tacoDesignRepository: TacoDesignRepository
+
+    @MockBean
+    private lateinit var order: Order
 
     @Test
     fun testHomePage() {

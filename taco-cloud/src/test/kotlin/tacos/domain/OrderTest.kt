@@ -1,14 +1,10 @@
 package tacos.domain
 
-import io.mockk.every
-import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import tacos.data.IngredientRepository
 import java.util.stream.Stream
 import javax.validation.Validation
 
@@ -62,31 +58,6 @@ class OrderTest {
     fun `Validation enforces that all fields will fit in database`(order: Order, expectedErrorMessage: String) {
         val violations = validator.validate(order)
         assertEquals(expectedErrorMessage, violations.single().message)
-    }
-
-    @Test
-    fun `getDesignsWithIngredientDescription applies descriptions using data from repository`() {
-        val ingredientRepository = mockk<IngredientRepository>()
-        every { ingredientRepository.findAll() } returns availableIngredients
-
-        val order = Order(
-            tacoDesigns = mutableListOf(
-                TacoDesign(id = 1, name = "Taco 1", ingredients = listOf("COTO", "GRBF")),
-                TacoDesign(id = 2, name = "Taco 2", ingredients = listOf("FLTO", "CARN"))
-            )
-        )
-
-        val designsWithIngredientDescription = order.getDesignsWithIngredientDescription(ingredientRepository)
-
-        val expectedDesignsWithIngredientDescription = listOf(
-            TacoDesignWithIngredientDescriptions(1, "Taco 1",
-                listOf( "COTO - Corn Tortilla (WRAP)", "GRBF - Ground Beef (PROTEIN)")
-            ),
-            TacoDesignWithIngredientDescriptions(2, "Taco 2",
-                listOf("FLTO - Flour Tortilla (WRAP)", "CARN - Carnitas (PROTEIN)")
-            )
-        )
-
     }
 
 }

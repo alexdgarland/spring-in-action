@@ -12,3 +12,7 @@ val availableIngredients = listOf(
     Ingredient("SLSA", "Salsa", IngredientType.SAUCE),
     Ingredient("SRCR", "Sour Cream", IngredientType.SAUCE)
 )
+
+fun getIngredients(vararg ids: String): List<Ingredient> {
+    return availableIngredients.filter { ids.contains(it.id) }
+}

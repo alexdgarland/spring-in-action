@@ -8,8 +8,7 @@ CREATE TABLE IF NOT EXISTS ingredient (
 CREATE TABLE IF NOT EXISTS taco_design (
     taco_design_id      BIGSERIAL PRIMARY KEY,
     taco_design_name    VARCHAR(50) NOT NULL,
-    created_at          TIMESTAMP NOT NULL,
-    updated_at          TIMESTAMP NOT NULL
+    created_at          TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS taco_design_ingredients (
@@ -29,7 +28,6 @@ AS
     SELECT  td.taco_design_id,
             td.taco_design_name,
             td.created_at,
-            td.updated_at,
             i.ingredient_id,
             i.ingredient_name,
             i.ingredient_type
@@ -81,7 +79,6 @@ AS
             vtd.taco_design_id,
             vtd.taco_design_name,
             vtd.created_at          AS design_created_at,
-            vtd.updated_at          AS design_updated_at,
             vtd.ingredient_id,
             vtd.ingredient_name,
             vtd.ingredient_type

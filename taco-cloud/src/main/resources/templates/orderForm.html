@@ -23,8 +23,8 @@
                 <td th:text="${design.name}">DESIGN_NAME</td>
                 <td>
                     <ul>
-                        <div th:each="description : ${design.ingredientDescriptions}">
-                            <li th:text="${description}">INGREDIENT</li>
+                        <div th:each="ingredient : ${design.ingredients}">
+                            <li th:text="${ingredient.description}">INGREDIENT</li>
                         </div>
                     </ul>
                 </td>
