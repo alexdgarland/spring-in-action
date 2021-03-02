@@ -1,6 +1,7 @@
 package tacos.data
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -9,7 +10,6 @@ import org.springframework.test.context.ContextConfiguration
 import org.testcontainers.junit.jupiter.Testcontainers
 import tacos.domain.TacoDesign
 import tacos.domain.getIngredients
-import java.util.*
 import javax.transaction.Transactional
 
 @Testcontainers
@@ -21,14 +21,6 @@ class TacoDesignRepositoryIT(@Autowired val repository: TacoDesignRepository) {
 
     private val designName = "my taco design"
     private val ingredients = getIngredients("COTO", "GRBF", "TMTO", "JACK", "SLSA")
-
-    fun assertDateSetRecently(date: Date?, description: String, dateFieldName: String) {
-        val current = Date()
-        assertTrue(
-            (current.time - date!!.time) < 1000,
-            "$description - $dateFieldName $date does not match $current"
-        )
-    }
 
     @Test
     fun canSaveNewTacoDesign() {

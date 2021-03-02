@@ -1,11 +1,6 @@
 package tacos.data
 
+import org.springframework.data.repository.CrudRepository
 import tacos.domain.Order
 
-interface OrderRepository {
-
-    fun save(order: Order): Order
-
-    fun findOne(orderId: Long): Order
-
-}
+interface OrderRepository: CrudRepository<Order, Long>

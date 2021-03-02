@@ -29,12 +29,10 @@ data class TacoDesign(
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
-    var createdDate: Date? = null,
+    var createdDate: Date? = null
 ) {
 
-    fun getIngredientUiMap(
-        availableIngredients: Iterable<Ingredient>
-    ): Map<String, List<IngredientCheckBoxViewModel>> {
+    fun getIngredientUiMap(availableIngredients: Iterable<Ingredient>): Map<String, List<IngredientCheckBoxViewModel>> {
         return availableIngredients
             .groupBy { ingredient -> ingredient.type.toString().toLowerCase() }
             .mapValues { entry ->
