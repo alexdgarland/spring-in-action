@@ -64,7 +64,7 @@ class OrderRepositoryIT(@Autowired val repository: OrderRepository) {
             assertEquals(orderCcExpiration, actualOrder.ccExpiration, "$description - CC expiration not as expected")
             assertEquals(orderCcCvv, actualOrder.ccCvv, "$description - CC CVV not as expected")
             assertSameTacoDesigns(tacoDesigns, actualOrder.tacoDesigns, description)
-            assertDateSetRecently(actualOrder.placedDate, description, "Placed date")
+            assertDateSetRecently(actualOrder.createdDate, description, "Created date")
             assertDateSetRecently(actualOrder.updatedDate, description, "Updated date")
         }
 
@@ -82,7 +82,7 @@ class OrderRepositoryIT(@Autowired val repository: OrderRepository) {
 
         val originalSavedOrder = repository.save(order)
         val orderId = originalSavedOrder.id?: fail("Test should get a returned ID")
-        val originalPlacedDate = originalSavedOrder.placedDate
+        val originalCreatedDate = originalSavedOrder.createdDate
         val originalUpdatedDate = originalSavedOrder.updatedDate
 
         // Sleep for one second so can be sure that last modified date will change
@@ -109,7 +109,7 @@ class OrderRepositoryIT(@Autowired val repository: OrderRepository) {
             // When updated object is returned from save method the created date will be null
             // (see https://github.com/spring-projects/spring-data-jpa/issues/1735)
             // so need to expect that where appropriate
-            expectedPlacedDate: Date?
+            expectedCreatedDate: Date?
         ) {
             assertEquals(newName, actualOrder.name, "$description - Name not as expected")
             assertEquals(orderStreet, actualOrder.street, "$description - Street not as expected")
@@ -120,13 +120,13 @@ class OrderRepositoryIT(@Autowired val repository: OrderRepository) {
             assertEquals(orderCcExpiration, actualOrder.ccExpiration, "$description - CC expiration not as expected")
             assertEquals(orderCcCvv, actualOrder.ccCvv, "$description - CC CVV not as expected")
             assertSameTacoDesigns(newDesigns, actualOrder.tacoDesigns, description)
-            assertEquals(expectedPlacedDate, actualOrder.placedDate, "$description - Placed date not as expected")
+            assertEquals(expectedCreatedDate, actualOrder.createdDate, "$description - Created date not as expected")
             assertDateSetRecently(actualOrder.updatedDate, description, "Updated date")
             assertNotEquals(originalUpdatedDate, actualOrder.updatedDate, "$description - Updated date not changed")
         }
 
         assertExpectedUpdatedOrder(updatedSavedOrder, "Saved order", null)
-        assertExpectedUpdatedOrder(repository.findById(orderId).get(), "Retrieved order", originalPlacedDate)
+        assertExpectedUpdatedOrder(repository.findById(orderId).get(), "Retrieved order", originalCreatedDate)
     }
 
 }

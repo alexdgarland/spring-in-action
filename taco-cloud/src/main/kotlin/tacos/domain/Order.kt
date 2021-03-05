@@ -1,11 +1,7 @@
 package tacos.domain
 
 import org.hibernate.validator.constraints.CreditCardNumber
-import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.annotation.LastModifiedDate
-import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import org.springframework.stereotype.Component
-import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.Digits
 import javax.validation.constraints.NotBlank
@@ -14,7 +10,6 @@ import javax.validation.constraints.Size
 
 @Component
 @Entity(name = "taco_order")
-@EntityListeners(AuditingEntityListener::class)
 data class Order(
     @Id
     @Column(name = "taco_order_id")
@@ -58,14 +53,6 @@ data class Order(
     @get:Digits(integer=3, fraction=0, message="Invalid CVV")
     var ccCvv: String="",
 
-    @Column(name = "placed_at", nullable = false, updatable = false)
-    @CreatedDate
-    var placedDate: Date? = null,
-
-    @Column(name = "updated_at", nullable = false)
-    @LastModifiedDate
-    var updatedDate: Date? = null,
-
     @ManyToMany(targetEntity = TacoDesign::class)
     @JoinTable(
         name = "taco_order_taco_designs",
@@ -73,4 +60,4 @@ data class Order(
         inverseJoinColumns = [JoinColumn(name = "taco_design_id")]
     )
     val tacoDesigns: MutableList<TacoDesign> = mutableListOf()
-)
+): AuditableEntity()

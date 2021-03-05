@@ -1,14 +1,9 @@
 package tacos.domain
 
-import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.annotation.LastModifiedDate
-import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.Size
 
 @Entity
-@EntityListeners(AuditingEntityListener::class)
 data class TacoDesign(
     @Id
     @Column(name = "taco_design_id")
@@ -26,16 +21,9 @@ data class TacoDesign(
         inverseJoinColumns = [JoinColumn(name = "ingredient_id")]
     )
     @get:Size(min=1, message = "You must choose at least one ingredient")
-    var ingredients: List<Ingredient> = emptyList(),
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    @CreatedDate
-    var createdDate: Date? = null,
-
-    @Column(name = "updated_at", nullable = false)
-    @LastModifiedDate
-    var updatedDate: Date? = null
-) {
+    var ingredients: List<Ingredient> = emptyList()
+): AuditableEntity()
+{
 
     fun getIngredientUiMap(availableIngredients: Iterable<Ingredient>): Map<String, List<IngredientCheckBoxViewModel>> {
         return availableIngredients
