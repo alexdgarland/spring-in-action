@@ -2,6 +2,7 @@ package tacos.domain
 
 import org.hibernate.validator.constraints.CreditCardNumber
 import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import org.springframework.stereotype.Component
 import java.util.*
@@ -60,6 +61,10 @@ data class Order(
     @Column(name = "placed_at", nullable = false, updatable = false)
     @CreatedDate
     var placedDate: Date? = null,
+
+    @Column(name = "updated_at", nullable = false)
+    @LastModifiedDate
+    var updatedDate: Date? = null,
 
     @ManyToMany(targetEntity = TacoDesign::class)
     @JoinTable(

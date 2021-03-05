@@ -15,7 +15,8 @@ class PostgresContainerTestInitializer: ApplicationContextInitializer<Configurab
         TestPropertyValues.of(
             "spring.datasource.url=${postgresContainer.jdbcUrl}",
             "spring.datasource.username=${postgresContainer.username}",
-            "spring.datasource.password=${postgresContainer.password}"
+            "spring.datasource.password=${postgresContainer.password}",
+            "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
         ).applyTo(appContext)
     }
 

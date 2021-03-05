@@ -1,6 +1,7 @@
 package tacos.domain
 
 import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.util.*
 import javax.persistence.*
@@ -29,7 +30,11 @@ data class TacoDesign(
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
-    var createdDate: Date? = null
+    var createdDate: Date? = null,
+
+    @Column(name = "updated_at", nullable = false)
+    @LastModifiedDate
+    var updatedDate: Date? = null
 ) {
 
     fun getIngredientUiMap(availableIngredients: Iterable<Ingredient>): Map<String, List<IngredientCheckBoxViewModel>> {
