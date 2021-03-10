@@ -1,4 +1,19 @@
 
+CREATE TABLE users (
+	username            VARCHAR(50) NOT NULL PRIMARY KEY,
+	password            CHAR(60) NOT NULL,
+	enabled             BOOLEAN NOT NULL
+);
+
+CREATE TABLE authorities (
+	username            VARCHAR(50) NOT NULL,
+	authority           VARCHAR(50) not null,
+	PRIMARY KEY(username, authority)
+);
+
+ALTER TABLE authorities
+    ADD FOREIGN KEY (username) REFERENCES users(username);
+
 CREATE TABLE IF NOT EXISTS ingredient (
     ingredient_id       VARCHAR(4) NOT NULL PRIMARY KEY,
     ingredient_name     VARCHAR(25) NOT NULL,
