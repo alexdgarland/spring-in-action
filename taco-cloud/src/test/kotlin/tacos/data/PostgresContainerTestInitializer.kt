@@ -8,8 +8,6 @@ class PostgresContainerTestInitializer: ApplicationContextInitializer<Configurab
 
     override fun initialize(appContext: ConfigurableApplicationContext) {
         val postgresContainer: KPostgreSQLTestContainer = KPostgreSQLTestContainer.create()
-            .withInitScript("schema.sql", "01-schema.sql")
-            .withInitScript("data.sql", "02-data.sql")
         postgresContainer.start()
 
         TestPropertyValues.of(

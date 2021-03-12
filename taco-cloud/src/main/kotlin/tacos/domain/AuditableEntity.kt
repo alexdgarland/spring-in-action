@@ -14,10 +14,10 @@ open class AuditableEntity {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
-    var createdDate: Date? = null
+    open var createdDate: Date? = null
 
     @Column(name = "updated_at", nullable = false)
     @LastModifiedDate
-    var updatedDate: Date? = null
+    open var updatedDate: Date? = null
 
 }
