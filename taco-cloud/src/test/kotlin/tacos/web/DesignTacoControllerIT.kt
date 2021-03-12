@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.view
@@ -17,26 +18,35 @@ import tacos.data.PostgresContainerTestInitializer
 @SpringBootTest(properties = ["spring.main.allow-bean-definition-overriding=true"])
 @ContextConfiguration(initializers = [PostgresContainerTestInitializer::class])
 @AutoConfigureMockMvc
-class HomeControllerIT {
+class DesignTacoControllerIT {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
 
     @Test
-    fun testHomePageRequiresAuthentication() {
+    fun testTacoDesignPageRequiresAuthentication() {
         mockMvc
-            .perform(get("/"))
+            .perform(get("/design"))
             .andExpect(status().isUnauthorized)
     }
 
     @Test
     @WithMockUser
-    fun testHomePageIsAccessibleWhenAuthorized() {
+    fun testTacoDesignPageIsAccessibleWhenAuthorized() {
+
+        fun ResultActions.andExpectHeaderFor(ingredientType: String) =
+            andExpectHasString("Select your <span>$ingredientType")
+
         mockMvc
-            .perform(get("/"))
+            .perform(get("/design"))
             .andExpect(status().isOk)
-            .andExpect(view().name("home"))
-            .andExpectHasString("Bienvenido a la nube de tacos...")
+            .andExpect(view().name("design"))
+            .andExpectHasString("Design your taco!")
+            .andExpectHeaderFor("wrap")
+            .andExpectHeaderFor("protein")
+            .andExpectHeaderFor("veggies")
+            .andExpectHeaderFor("cheese")
+            .andExpectHeaderFor("sauce")
     }
 
 }
