@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.view
 import org.testcontainers.junit.jupiter.Testcontainers
 import tacos.data.PostgresContainerTestInitializer
 
+private const val HOME_URL_TEMPLATE = "/"
+
 @Testcontainers
 @SpringBootTest(properties = ["spring.main.allow-bean-definition-overriding=true"])
 @ContextConfiguration(initializers = [PostgresContainerTestInitializer::class])
@@ -25,7 +27,7 @@ class HomeControllerIT {
     @Test
     fun testHomePageRequiresAuthentication() {
         mockMvc
-            .perform(get("/"))
+            .perform(get(HOME_URL_TEMPLATE))
             .andExpect(status().isUnauthorized)
     }
 
@@ -33,7 +35,7 @@ class HomeControllerIT {
     @WithMockUser
     fun testHomePageIsAccessibleWhenAuthorized() {
         mockMvc
-            .perform(get("/"))
+            .perform(get(HOME_URL_TEMPLATE))
             .andExpect(status().isOk)
             .andExpect(view().name("home"))
             .andExpectHasString("Bienvenido a la nube de tacos...")

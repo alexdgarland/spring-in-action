@@ -1,11 +1,11 @@
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
 	username            VARCHAR(50) NOT NULL PRIMARY KEY,
 	password            CHAR(60) NOT NULL,
 	enabled             BOOLEAN NOT NULL
 );
 
-CREATE TABLE authorities (
+CREATE TABLE IF NOT EXISTS authorities (
 	username            VARCHAR(50) NOT NULL,
 	authority           VARCHAR(50) not null,
 	PRIMARY KEY(username, authority)

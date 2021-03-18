@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.view
 import org.testcontainers.junit.jupiter.Testcontainers
 import tacos.data.PostgresContainerTestInitializer
 
+private const val DESIGN_URL_TEMPLATE = "/design"
+
 @Testcontainers
 @SpringBootTest(properties = ["spring.main.allow-bean-definition-overriding=true"])
 @ContextConfiguration(initializers = [PostgresContainerTestInitializer::class])
@@ -26,7 +28,7 @@ class DesignTacoControllerIT {
     @Test
     fun testTacoDesignPageRequiresAuthentication() {
         mockMvc
-            .perform(get("/design"))
+            .perform(get(DESIGN_URL_TEMPLATE))
             .andExpect(status().isUnauthorized)
     }
 
@@ -38,7 +40,7 @@ class DesignTacoControllerIT {
             andExpectHasString("Select your <span>$ingredientType")
 
         mockMvc
-            .perform(get("/design"))
+            .perform(get(DESIGN_URL_TEMPLATE))
             .andExpect(status().isOk)
             .andExpect(view().name("design"))
             .andExpectHasString("Design your taco!")
