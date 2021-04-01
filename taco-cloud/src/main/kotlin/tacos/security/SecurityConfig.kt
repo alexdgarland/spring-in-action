@@ -17,15 +17,14 @@ class SecurityConfig(@Autowired val dataSource: DataSource): WebSecurityConfigur
     fun passwordEncoder() = BCryptPasswordEncoder(10)
 
     override fun configure(auth: AuthenticationManagerBuilder?) {
-        val jdbcAuth = auth?.jdbcAuthentication()?.dataSource(dataSource)
-
-        fun addUser(name: String, password: String) = jdbcAuth
-            ?.withUser(name)
-            ?.password(passwordEncoder().encode(password))
-            ?.authorities("ROLE_USER")
-
-        addUser("buzz", "infinity")
-        addUser("woody", "bullseye")
+        auth
+            ?.ldapAuthentication()
+            ?.userSearchBase("ou=customers")
+            ?.userSearchFilter("(uid={0})")
+            ?.groupSearchBase("ou=groups")
+            ?.groupSearchFilter("member={0}")
+            ?.contextSource()
+            ?.url("ldap://taco-ldap:389")
     }
 
 }
