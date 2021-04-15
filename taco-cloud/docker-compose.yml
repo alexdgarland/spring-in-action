@@ -1,5 +1,4 @@
 version: '2.1'
-
 services:
 
   taco-postgres:
@@ -13,25 +12,11 @@ services:
     expose:
       - 5432
 
-  taco-ldap:
-    image: osixia/openldap:1.5.0
-    environment:
-      - LDAP_ORGANISATION="Taco Cloud Inc"
-      - LDAP_DOMAIN="tacocloud.com"
-      - LDAP_ADMIN_PASSWORD="tacos"
-    ports:
-      - "389:389"
-    volumes:
-      - ./ldap/database:/var/lib/ldap
-      - ./ldap/config:/etc/ldap/slapd.d
-      - ./ldap/custom_ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom
-
   taco-webserver:
     image: taco-cloud
     restart: always
     depends_on:
       - taco-postgres
-      - taco-ldap
     ports:
       - "8080:8080"
     volumes:
