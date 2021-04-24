@@ -12,16 +12,16 @@ data class User(
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
-    private val username: String? = null,
-    private val password: String? = null,
-    val fullname: String? = null,
-    val street: String? = null,
-    val city: String? = null,
-    val state: String? = null,
-    val zip: String? = null,
-    val phoneNumber: String? = null,
-    val enabled: Boolean = true
+    var id: Long? = null,
+    private var username: String? = null,
+    private var password: String? = null,
+    var fullname: String? = null,
+    var street: String? = null,
+    var city: String? = null,
+    var state: String? = null,
+    var zip: String? = null,
+    var phoneNumber: String? = null,
+    var enabled: Boolean = true
 ) : UserDetails, AuditableEntity() {
 
     override fun getAuthorities(): Collection<GrantedAuthority?> {
@@ -32,8 +32,16 @@ data class User(
         return password?: throw IllegalStateException("Password not set")
     }
 
+    fun setPassword(newPassword: String) {
+        password = newPassword
+    }
+
     override fun getUsername(): String {
         return username?: throw IllegalStateException("User name not set")
+    }
+
+    fun setUserName(newUsername: String) {
+        username = newUsername
     }
 
     override fun isAccountNonExpired(): Boolean {
