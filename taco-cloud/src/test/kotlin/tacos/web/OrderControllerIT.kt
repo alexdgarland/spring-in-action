@@ -33,8 +33,8 @@ class OrderControllerIT {
     @Test
     fun testOrderPageRequiresAuthentication() {
         mockMvc
-            .perform(get(CURRENT_ORDER_URL_TEMPLATE))
-            .andExpect(status().isUnauthorized)
+            .perform(get(CURRENT_ORDER_URL_TEMPLATE).flashAttr("order", Order()))
+            .andExpect(status().isForbidden)
     }
 
     fun baseAsserts(performResultActions: ResultActions): ResultActions {
@@ -82,7 +82,7 @@ class OrderControllerIT {
             )
         )
 
-        baseAsserts(mockMvc.perform(get(CURRENT_ORDER_URL_TEMPLATE).sessionAttr("order", orderModel)))
+        baseAsserts(mockMvc.perform(get(CURRENT_ORDER_URL_TEMPLATE).flashAttr("order", orderModel)))
             // Feels like this assertion should work  - page does actually show the ordered designs,
             // but it doesn't come through in the rendered HTML (including when looking at "View Source" of running app).
             // Not sure why this is right now...

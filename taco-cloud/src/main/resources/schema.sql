@@ -1,18 +1,27 @@
 
 CREATE TABLE IF NOT EXISTS users (
-	username            VARCHAR(50) NOT NULL PRIMARY KEY,
-	password            CHAR(60) NOT NULL,
-	enabled             BOOLEAN NOT NULL
+    user_id             BIGSERIAL PRIMARY KEY,
+	username            VARCHAR(50) NOT NULL UNIQUE,
+	password            VARCHAR(60) NOT NULL,
+	fullname            VARCHAR(100) NOT NULL,
+	street              VARCHAR(100) NOT NULL,
+	city                VARCHAR(100) NOT NULL,
+	state               VARCHAR(2) NOT NULL,
+	zip                 VARCHAR(10) NOT NULL,
+	phone_number        VARCHAR(20) NOT NULL,
+	enabled             BOOLEAN NOT NULL,
+    created_at          TIMESTAMP NOT NULL,
+    updated_at          TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS authorities (
-	username            VARCHAR(50) NOT NULL,
+	user_id             BIGINT NOT NULL,
 	authority           VARCHAR(50) not null,
-	PRIMARY KEY(username, authority)
+	PRIMARY KEY(user_id, authority)
 );
 
 ALTER TABLE authorities
-    ADD FOREIGN KEY (username) REFERENCES users(username);
+    ADD FOREIGN KEY (user_id) REFERENCES users(user_id);
 
 CREATE TABLE IF NOT EXISTS ingredient (
     ingredient_id       VARCHAR(4) NOT NULL PRIMARY KEY,

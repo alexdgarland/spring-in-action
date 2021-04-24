@@ -29,7 +29,7 @@ class DesignTacoControllerIT {
     fun testTacoDesignPageRequiresAuthentication() {
         mockMvc
             .perform(get(DESIGN_URL_TEMPLATE))
-            .andExpect(status().isUnauthorized)
+            .andExpect(status().isForbidden)
     }
 
     @Test
