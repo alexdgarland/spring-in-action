@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UserDetails
 import java.util.*
 import javax.persistence.*
 
-// TODO - validate fields from form (e.g. not null, max length) and escalate errors to page
 @Entity(name = "users")
 data class User(
     @Id

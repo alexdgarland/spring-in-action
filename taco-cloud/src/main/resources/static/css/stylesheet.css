@@ -23,6 +23,12 @@ table {
   padding: 10px;
 }
 
+.grid-registration-form {
+  display: grid;
+  grid-template-columns: 200px 500px; 400px;
+  padding: 10px;
+}
+
 .button {
   background-color: #2edb5c;
   font-size: 14px;
