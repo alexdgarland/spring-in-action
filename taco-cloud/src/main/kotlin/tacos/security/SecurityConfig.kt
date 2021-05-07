@@ -30,9 +30,8 @@ class SecurityConfig(@Autowired val userDetailsService: UserDetailsService): Web
     override fun configure(http: HttpSecurity?) {
         http
             ?.authorizeRequests()
-            ?.antMatchers("/design", "/orders", "/orders/**")
-            ?.hasRole("USER")
-            ?.antMatchers("/", "/**")
-            ?.permitAll()
+            ?.antMatchers("/design", "/orders", "/orders/**")?.hasRole("USER")
+            ?.antMatchers("/", "/**")?.permitAll()
+            ?.and()?.formLogin()?.loginPage("/login")
     }
 }

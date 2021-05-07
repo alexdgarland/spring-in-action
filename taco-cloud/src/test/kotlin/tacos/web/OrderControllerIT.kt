@@ -10,6 +10,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.view
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -31,10 +32,11 @@ class OrderControllerIT {
     private lateinit var mockMvc: MockMvc
 
     @Test
-    fun testOrderPageRequiresAuthentication() {
+    fun testOrderPageRedirectsToLoginIfNotAuthenticated() {
         mockMvc
             .perform(get(CURRENT_ORDER_URL_TEMPLATE).flashAttr("order", Order()))
-            .andExpect(status().isForbidden)
+            .andExpect(status().isFound)
+            .andExpect(MockMvcResultMatchers.redirectedUrl("http://localhost/login"))
     }
 
     fun baseAsserts(performResultActions: ResultActions): ResultActions {
